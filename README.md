@@ -31,6 +31,13 @@
 3. UI 개선
 4. 키보드 조작 시 기존 위치 출력된 부분 사라지는 문제 해결.
 5. AI 랜덤 -> 난이도 추가
+```
+random_device rd;
+			mt19937 gen(rd());
+			uniform_int_distribution<int> dis(0, 2);
+			y = dis(gen);
+			x = dis(gen);
+```
 
 # 제목1
 ## 제목2
