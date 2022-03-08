@@ -17,6 +17,6 @@
 * 둘
 * 셋
 
-```python
+```cpp
 printf("dfdf");
 ```
