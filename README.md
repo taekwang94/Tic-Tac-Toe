@@ -29,9 +29,9 @@
 1. 돌 놓기 기능 Map과 Player 중복.
 2. 키보드 조작 기능 Game에서 별도의 class로 분리하기.
 3. UI 개선
-4. 키보드 조작 시 기존 위치 출력된 부분 사라지는 문제 해결.
-5. AI 랜덤 -> 난이도 추가
-```
+4. ~~키보드 조작 시 기존 위치 출력된 부분 사라지는 문제 해결. ~~- 해결
+5. AI 랜덤 -> 알고리즘 추가.
+```cpp
 random_device rd;
 mt19937 gen(rd());
 uniform_int_distribution<int> dis(0, 2);
