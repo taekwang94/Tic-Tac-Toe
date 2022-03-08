@@ -28,4 +28,4 @@ printf("dfdf");
 
 **강조**
 
-<img src="https://blog.kakaocdn.net/dn/euksHz/btrkikzsvnn/p5AdNUCmxGuZbnu4Vq98Y0/img.webp" >
+<img src="https://blog.kakaocdn.net/dn/euksHz/btrkikzsvnn/p5AdNUCmxGuZbnu4Vq98Y0/img.webp" width="100px" >
