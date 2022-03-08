@@ -309,7 +309,7 @@ public:
 		while (1) {
 			int n = keyConsol();
 			switch (n) {
-			case UP: { //
+			case UP: { // 
 				if (y > 9) {
 					gotoxy(x - 2, y);
 					printf(" ");
