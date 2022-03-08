@@ -18,5 +18,5 @@
 * 셋
 
 ```
-printf("dfdf";
+printf("dfdf");
 ```
