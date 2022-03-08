@@ -291,6 +291,7 @@ public:
 		int up_count = 0;
 		int down_count = 0;
 		char p = a.get_mark_char();
+		
 		system("cls");
 		title_show();
 		map.show_map();
@@ -300,6 +301,7 @@ public:
 		//cout << "진행중인 게임";
 		//gotoxy(0, y + 11);
 		//map.show_map();
+
 
 
 		gotoxy(x - 2, y);
@@ -316,7 +318,7 @@ public:
 					map.show_map();
 					gotoxy(x - 2, ----y);
 
-					printf(">");
+					printf("%c",p);
 					up_count--;
 					
 				}
@@ -330,7 +332,7 @@ public:
 					title_show();
 					map.show_map();
 					gotoxy(x - 2, ++++y);
-					printf(">");
+					printf("%c", p);
 					down_count++;
 				}
 				break;
@@ -343,7 +345,7 @@ public:
 					title_show();
 					map.show_map();
 					gotoxy(--------x - 2, y);
-					printf(">");
+					printf("%c", p);
 					left_count--;
 				}
 				break;
@@ -356,7 +358,7 @@ public:
 					title_show();
 					map.show_map();
 					gotoxy(++++++++x - 2, y);
-					printf(">");
+					printf("%c", p);
 					right_count++;
 				}
 				break;
