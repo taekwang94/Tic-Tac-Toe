@@ -544,6 +544,8 @@ public:
 int main() {
 	//수정 테스트
 	int a;
+	int b;
+
 	while (1) {
 		system("cls");
 		Game a;
