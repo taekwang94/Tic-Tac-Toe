@@ -38,6 +38,7 @@ uniform_int_distribution<int> dis(0, 2);
 y = dis(gen);
 x = dis(gen);
 ```
+6. cin 입력 -> 키보드 동작 변경 과정에서 필요 없는 코드 부분 제거할것.
 
 # 제목1
 ## 제목2
