@@ -23,4 +23,4 @@ printf("dfdf");
 
 ***
 
-[google](https://google.com, "google link")
+[google](https://google.com)
