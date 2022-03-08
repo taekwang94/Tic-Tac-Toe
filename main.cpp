@@ -63,7 +63,7 @@ public:
 		}
 	}
 
-	bool set_mark(int y, int x, int mark) {
+	bool set_mark(int y, int x, int mark) { // 돌놓기
 		if (map[y][x] == 0) {
 			this->map[y][x] = mark;
 			return 1;
