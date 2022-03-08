@@ -1,4 +1,4 @@
-# Project1
+# Tic Tac Toe
 
 # 제목1
 ## 제목2
