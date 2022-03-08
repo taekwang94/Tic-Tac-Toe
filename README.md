@@ -33,10 +33,10 @@
 5. AI 랜덤 -> 난이도 추가
 ```
 random_device rd;
-			mt19937 gen(rd());
-			uniform_int_distribution<int> dis(0, 2);
-			y = dis(gen);
-			x = dis(gen);
+mt19937 gen(rd());
+uniform_int_distribution<int> dis(0, 2);
+y = dis(gen);
+x = dis(gen);
 ```
 
 # 제목1
