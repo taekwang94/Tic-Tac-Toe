@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <stdio.h>
 #include <random>
 #include <tuple>
@@ -69,7 +69,7 @@ public:
 			return 1;
 		}
 		else {
-			//cout << "¿Ç¹Ù¸¥ À§Ä¡¿¡ ³õÀ¸¼¼¿ä" << endl;
+			//cout << "ì˜³ë°”ë¥¸ ìœ„ì¹˜ì— ë†“ìœ¼ì„¸ìš”" << endl;
 			return 0;
 		}
 	}
@@ -86,24 +86,24 @@ public:
 		return temp;
 	}
 	int check_map() {
-		//°¡·Î
+		//ê°€ë¡œ
 		for (int i = 0; i < 3; i++) {
 			if (((map[i][0] == map[i][1]) && (map[i][1] == map[i][2]) && (map[i][0] == map[i][2])) && (map[i][0] != 0) && (map[i][1] != 0) && (map[i][2] != 0)) {
 				return map[i][0];
 			}
 		}
-		//¼¼·Î
+		//ì„¸ë¡œ
 		for (int i = 0; i < 3; i++) {
 			if (((map[0][i] == map[1][i]) && (map[1][i] == map[2][i]) && (map[0][i] == map[2][i])) && (map[0][i] != 0) && (map[1][i] != 0) && (map[2][i] != 0)) {
 				return map[0][i];
 			}
 		}
-		//´ë°¢¼±
+		//ëŒ€ê°ì„ 
 		if ((map[0][0] == map[1][1]) && (map[1][1] == map[2][2]) && (map[0][0] != 0) && (map[1][1] != 0) && (map[2][2] != 0)
 			|| (map[0][2] == map[1][1]) && (map[1][1] == map[2][0]) && (map[0][2] != 0) && (map[1][1] != 0) && (map[2][0] != 0)) {
 			return map[1][1];
 		}
-		//¾øÀ½
+		//ì—†ìŒ
 		return 0;
 	}
 };
@@ -166,7 +166,7 @@ public:
 			x = dis(gen);
 		}
 		else {
-			cout << this->player_num << "P  " << "(y, x)ÁÂÇ¥¸¦ ÀÔ·ÂÇÏ¼¼¿ä >> ";
+			cout << this->player_num << "P  " << "(y, x)ì¢Œí‘œë¥¼ ì…ë ¥í•˜ì„¸ìš” >> ";
 			cin >> y >> x;
 		}
 
@@ -207,11 +207,11 @@ public:
 		int x = 24;
 		int y = 12;
 		gotoxy(x - 2, y - 1);
-		cout << "<<  1P, 2P ¼±ÅÃ  >>" << endl;
+		cout << "<<  1P, 2P ì„ íƒ  >>" << endl;
 		gotoxy(x - 2, y);
-		cout << "> 1ÀÎ¿ë";
+		cout << "> 1ì¸ìš©";
 		gotoxy(x, y + 1);
-		cout << "2ÀÎ¿ë";
+		cout << "2ì¸ìš©";
 		gotoxy(x, y + 2);
 		cout << endl;
 		while (1) {
@@ -248,7 +248,7 @@ public:
 		int y = 12;
 
 		gotoxy(x - 2, y - 1);
-		cout << "<<  O,XÁß »ç¿ëÇÒ°Í ¼±ÅÃ  >>" << endl;
+		cout << "<<  O,Xì¤‘ ì‚¬ìš©í• ê²ƒ ì„ íƒ  >>" << endl;
 		gotoxy(x - 2, y);
 		cout << "> O";
 		gotoxy(x, y + 1);
@@ -295,9 +295,9 @@ public:
 		title_show();
 		map.show_map();
 		gotoxy(19, y);
-		cout << p << " Â÷·Ê ÀÔ´Ï´Ù" << endl;
+		cout << p << " ì°¨ë¡€ ì…ë‹ˆë‹¤" << endl;
 		gotoxy(5, y + 9);
-		cout << "ÁøÇàÁßÀÎ °ÔÀÓ";
+		cout << "ì§„í–‰ì¤‘ì¸ ê²Œì„";
 		gotoxy(0, y + 11);
 		map.show_map();
 
@@ -363,10 +363,10 @@ public:
 		int x = 24;
 		int y = 12;
 		gotoxy(x - 2, y);
-		cout << "> °ÔÀÓ½ÃÀÛ";
+		cout << "> ê²Œì„ì‹œì‘";
 
 		gotoxy(x, y + 1);
-		cout << " Á¾·á ";
+		cout << " ì¢…ë£Œ ";
 		cout << endl;
 		while (1) {
 			int n = keyConsol();
@@ -493,11 +493,11 @@ public:
 			is_full = map.is_full();
 			if (check || !is_full) {
 				if (check) {
-					cout << "<< " << show_list[check] << "°¡ ÀÌ°å½À´Ï´Ù. >>" << endl;
+					cout << "<< " << show_list[check] << "ê°€ ì´ê²¼ìŠµë‹ˆë‹¤. >>" << endl;
 					map.show_map();
 				}
 				else {
-					cout << "<< " << "¹«½ÂºÎ ÀÔ´Ï´Ù. >>" << endl;
+					cout << "<< " << "ë¬´ìŠ¹ë¶€ ì…ë‹ˆë‹¤. >>" << endl;
 					map.show_map();
 				}
 				turn_count = 0;
@@ -521,14 +521,14 @@ public:
 			map.show_map();
 			check = map.check_map();
 			if (check) {
-				cout << "<< " << show_list[check] << "°¡ ÀÌ°å½À´Ï´Ù. >>" << endl;
+				cout << "<< " << show_list[check] << "ê°€ ì´ê²¼ìŠµë‹ˆë‹¤. >>" << endl;
 				turn_count = 0;
 			}
 			turn_count--;
 
 		}
 		char a = 0;
-		cout << "¾Æ¹« Å°³ª ´­·¯ Å¸ÀÌÆ²·Î" << endl;
+		cout << "ì•„ë¬´ í‚¤ë‚˜ ëˆŒëŸ¬ íƒ€ì´í‹€ë¡œ" << endl;
 		a = _getch();
 		if (a) {
 			return;
@@ -542,7 +542,7 @@ public:
 
 
 int main() {
-	//¼öÁ¤ Å×½ºÆ®
+	//ìˆ˜ì • í…ŒìŠ¤íŠ¸
 	
 
 	while (1) {
