@@ -204,7 +204,7 @@ public:
 	}
 	int draw_player_choice() {
 		title_show();
-		int x = 24;
+		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y - 1);
 		cout << "<<  1P, 2P 선택  >>" << endl;
@@ -244,14 +244,14 @@ public:
 
 	int draw_player_ox() {
 		title_show();
-		int x = 24;
+		int x = 30;
 		int y = 12;
 
 		gotoxy(x - 2, y - 1);
 		cout << "<<  O,X중 사용할것 선택  >>" << endl;
-		gotoxy(x - 2, y);
+		gotoxy(x - 2 , y);
 		cout << "> O";
-		gotoxy(x, y + 1);
+		gotoxy(x , y + 1);
 		cout << "X";
 		gotoxy(x, y + 2);
 		cout << endl;
@@ -291,15 +291,17 @@ public:
 		int up_count = 0;
 		int down_count = 0;
 		char p = a.get_mark_char();
+		
 		system("cls");
 		title_show();
 		map.show_map();
 		gotoxy(19, y);
 		cout << p << " 차례 입니다" << endl;
 		gotoxy(5, y + 9);
-		cout << "진행중인 게임";
-		gotoxy(0, y + 11);
-		map.show_map();
+		//cout << "진행중인 게임";
+		//gotoxy(0, y + 11);
+		//map.show_map();
+
 
 
 		gotoxy(x - 2, y);
@@ -311,9 +313,14 @@ public:
 				if (y > 9) {
 					gotoxy(x - 2, y);
 					printf(" ");
+					gotoxy(0, 0);
+					title_show();
+					map.show_map();
 					gotoxy(x - 2, ----y);
-					printf(">");
+
+					printf("%c",p);
 					up_count--;
+					
 				}
 				break;
 			}
@@ -321,8 +328,11 @@ public:
 				if (y < 13) {
 					gotoxy(x - 2, y);
 					printf(" ");
+					gotoxy(0, 0);
+					title_show();
+					map.show_map();
 					gotoxy(x - 2, ++++y);
-					printf(">");
+					printf("%c", p);
 					down_count++;
 				}
 				break;
@@ -331,8 +341,11 @@ public:
 				if (x > 9) {
 					gotoxy(x - 2, y);
 					printf(" ");
+					gotoxy(0, 0);
+					title_show();
+					map.show_map();
 					gotoxy(--------x - 2, y);
-					printf(">");
+					printf("%c", p);
 					left_count--;
 				}
 				break;
@@ -341,8 +354,11 @@ public:
 				if (x < 14) {
 					gotoxy(x - 2, y);
 					printf(" ");
+					gotoxy(0, 0);
+					title_show();
+					map.show_map();
 					gotoxy(++++++++x - 2, y);
-					printf(">");
+					printf("%c", p);
 					right_count++;
 				}
 				break;
@@ -360,7 +376,7 @@ public:
 
 	int draw_menu() {
 		title_show();
-		int x = 24;
+		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y);
 		cout << "> 게임시작";
@@ -487,17 +503,21 @@ public:
 			//P1
 			mark_xy = drop_marker_consol(p1);
 			map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p1.get_mark());
-			gotoxy(9 - 2 + 10 + 10, 9 + 10);
+			gotoxy(9 - 5 , 9 + 5);
 
 			check = map.check_map();
 			is_full = map.is_full();
 			if (check || !is_full) {
 				if (check) {
 					cout << "<< " << show_list[check] << "가 이겼습니다. >>" << endl;
+					gotoxy(0, 0);
+					title_show();
 					map.show_map();
 				}
 				else {
 					cout << "<< " << "무승부 입니다. >>" << endl;
+					gotoxy(0, 0);
+					title_show();
 					map.show_map();
 				}
 				turn_count = 0;
@@ -514,21 +534,25 @@ public:
 			else {
 				mark_xy = drop_marker_consol(p2);
 				map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p2.get_mark());
-				gotoxy(9 - 2 + 10, 9 + 10);
+				gotoxy(9 - 5, 9 + 5);
 				map.show_map();
 			}
-			gotoxy(9 - 2 + 10, 9 + 10);
-			map.show_map();
+			//gotoxy(9 - 2 + 10, 9 + 10);
+			//map.show_map();
 			check = map.check_map();
 			if (check) {
+				gotoxy(0, 0);
+				title_show();
+				map.show_map();
 				cout << "<< " << show_list[check] << "가 이겼습니다. >>" << endl;
 				turn_count = 0;
 			}
 			turn_count--;
 
 		}
+
 		char a = 0;
-		cout << "아무 키나 눌러 타이틀로" << endl;
+		cout << "\n  아무 키나 눌러 타이틀로.." << endl;
 		a = _getch();
 		if (a) {
 			return;
