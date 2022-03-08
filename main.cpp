@@ -543,7 +543,7 @@ public:
 
 int main() {
 	//수정 테스트
-
+	
 
 	while (1) {
 		system("cls");
