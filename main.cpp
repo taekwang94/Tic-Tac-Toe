@@ -67,12 +67,12 @@ public:
 			//cout <<"       " << show_list[map[i][0]] << " | " << show_list[map[i][1]] << " | " << show_list[map[i][2]] << endl;
 			printf("      ---|---|---\n");
 			if (show_list[map[i][0]] == 'O') {
-				printf("       %s%c%s",GREEN, show_list[map[i][0]],RESET);
+				printf("       %s%c%s", GREEN, show_list[map[i][0]], RESET);
 			}
 			else {
 				printf("       %s%c%s", RED, show_list[map[i][0]], RESET);
 			}
-			
+
 			printf(" | ");
 			if (show_list[map[i][1]] == 'O') {
 				printf("%s%c%s", GREEN, show_list[map[i][1]], RESET);
@@ -135,22 +135,37 @@ public:
 	}
 };
 
+struct Position {
+	int x;
+	int y;
+};
+
 class Player {
 private:
 	int mark; // O : 1, X : 2
 	char mark_char; // O, X 
 	bool is_ai; // 0 : player , 1 : AI
 	int player_num; // 1P , 2P
+	Position position;
 public:
 	Player() {
 		mark = 0;
 		mark_char = 'O';
 		is_ai = false;
 		player_num = 0;
+		position.x = 9;
+		position.y = 9;
 	}
 	Player(int mark, bool is_ai) {
 		this->mark = mark;
 		this->is_ai = is_ai;
+	}
+	void set_position(int x, int y) {
+		this->position.x = x;
+		this->position.y = y;
+	}
+	Position get_position() {
+		return this->position;
 	}
 	void set_mark(int mark) {
 		this->mark = mark;
@@ -310,7 +325,7 @@ public:
 		}
 	}
 
-	tuple<int, int> drop_marker_consol(Player a) {
+	tuple<int, int> drop_marker_consol(Player& a) {
 		int x = 9;
 		int y = 9;
 		int left_count = 0;
@@ -330,10 +345,17 @@ public:
 		//map.show_map();
 
 
+		x = a.get_position().x;
+		y = a.get_position().y;
 
 		gotoxy(x - 2, y);
 		cout << ">";
+		int x_ = x;
+		int y_ = y;
 		while (1) {
+			//gotoxy(26, 26);
+			//cout << "(" << x << " " << y << ")" << endl;
+			//cout << "(" << x_ << " " << y_ << ")";
 			int n = keyConsol();
 			switch (n) {
 			case UP: { // 
@@ -347,6 +369,7 @@ public:
 
 					printf("%c", p);
 					up_count--;
+					y_ -= 2;
 
 				}
 				break;
@@ -361,6 +384,7 @@ public:
 					gotoxy(x - 2, ++++y);
 					printf("%c", p);
 					down_count++;
+					y_ += 2;
 				}
 				break;
 			}
@@ -374,6 +398,7 @@ public:
 					gotoxy(--------x - 2, y);
 					printf("%c", p);
 					left_count--;
+					x_ -= 4;
 				}
 				break;
 			}
@@ -387,12 +412,23 @@ public:
 					gotoxy(++++++++x - 2, y);
 					printf("%c", p);
 					right_count++;
+					x_ += 4;
 				}
 				break;
 			}
 			case SUBMIT: {
-				if (map.get_position_mark(up_count + down_count, left_count + right_count) == 0) {
-					tuple<int, int> v = make_tuple(up_count + down_count, left_count + right_count);
+				int y_mapping[18] = { 0, };
+				int x_mapping[18] = { 0, };
+				y_mapping[9] = 0;
+				y_mapping[11] = 1;
+				y_mapping[13] = 2;
+				x_mapping[9] = 0;
+				x_mapping[13] = 1;
+				x_mapping[17] = 2;
+
+				if (map.get_position_mark(y_mapping[y], x_mapping[x]) == 0) {
+					tuple<int, int> v = make_tuple(y_mapping[y], x_mapping[x]);
+					a.set_position(x_, y_);
 					return v;
 				}
 
@@ -562,17 +598,21 @@ public:
 				mark_xy = drop_marker_consol(p2);
 				map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p2.get_mark());
 				gotoxy(9 - 5, 9 + 5);
-				map.show_map();
+				//map.show_map();
 			}
 			//gotoxy(9 - 2 + 10, 9 + 10);
 			//map.show_map();
 			check = map.check_map();
 			if (check) {
+				cout << "<< " << show_list[check] << "가 이겼습니다. >>" << endl;
 				gotoxy(0, 0);
 				title_show();
-				map.show_map();
-				cout << "<< " << show_list[check] << "가 이겼습니다. >>" << endl;
+				map.show_map();	
 				turn_count = 0;
+				break;
+				
+				
+
 			}
 			turn_count--;
 
