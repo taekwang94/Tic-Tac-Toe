@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <stdio.h>
 #include <random>
 #include <tuple>
@@ -14,6 +14,11 @@ using namespace std;
 #define LEFT 2
 #define RIGHT 3
 #define SUBMIT 4
+
+#define RED "\x1b[31m"
+#define GREEN "\x1b[32m"
+#define RESET "\x1b[0m"
+
 
 char show_list[] = { ' ', 'O', 'X' };
 
@@ -58,8 +63,30 @@ public:
 	}
 	void show_map() {
 		for (int i = 0; i < 3; i++) {
-			cout << "      ---|---|---" << endl;
-			cout << "       " << show_list[map[i][0]] << " | " << show_list[map[i][1]] << " | " << show_list[map[i][2]] << endl;
+			//cout <<"      ---|---|---" << endl;
+			//cout <<"       " << show_list[map[i][0]] << " | " << show_list[map[i][1]] << " | " << show_list[map[i][2]] << endl;
+			printf("      ---|---|---\n");
+			if (show_list[map[i][0]] == 'O') {
+				printf("       %s%c%s",GREEN, show_list[map[i][0]],RESET);
+			}
+			else {
+				printf("       %s%c%s", RED, show_list[map[i][0]], RESET);
+			}
+			
+			printf(" | ");
+			if (show_list[map[i][1]] == 'O') {
+				printf("%s%c%s", GREEN, show_list[map[i][1]], RESET);
+			}
+			else {
+				printf("%s%c%s", RED, show_list[map[i][1]], RESET);
+			}
+			printf(" | ");
+			if (show_list[map[i][2]] == 'O') {
+				printf("%s%c%s\n", GREEN, show_list[map[i][2]], RESET);
+			}
+			else {
+				printf("%s%c%s\n", RED, show_list[map[i][2]], RESET);
+			}
 		}
 	}
 
@@ -249,9 +276,9 @@ public:
 
 		gotoxy(x - 2, y - 1);
 		cout << "<<  O,X중 사용할것 선택  >>" << endl;
-		gotoxy(x - 2 , y);
+		gotoxy(x - 2, y);
 		cout << "> O";
-		gotoxy(x , y + 1);
+		gotoxy(x, y + 1);
 		cout << "X";
 		gotoxy(x, y + 2);
 		cout << endl;
@@ -291,7 +318,7 @@ public:
 		int up_count = 0;
 		int down_count = 0;
 		char p = a.get_mark_char();
-		
+
 		system("cls");
 		title_show();
 		map.show_map();
@@ -318,9 +345,9 @@ public:
 					map.show_map();
 					gotoxy(x - 2, ----y);
 
-					printf("%c",p);
+					printf("%c", p);
 					up_count--;
-					
+
 				}
 				break;
 			}
@@ -503,7 +530,7 @@ public:
 			//P1
 			mark_xy = drop_marker_consol(p1);
 			map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p1.get_mark());
-			gotoxy(9 - 5 , 9 + 5);
+			gotoxy(9 - 5, 9 + 5);
 
 			check = map.check_map();
 			is_full = map.is_full();
@@ -567,7 +594,7 @@ public:
 
 int main() {
 	//수정 테스트
-	
+
 
 	while (1) {
 		system("cls");
