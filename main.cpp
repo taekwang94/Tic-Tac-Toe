@@ -1,3 +1,4 @@
+#pragma comment(lib, "ws2_32.lib")
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <winsock2.h>
@@ -84,7 +85,7 @@ public:
 	}
 	void listen_() {
 		listen(hServSock, 5);
-		printf("listen() 성공\n");
+		printf("Client를 기다리는중 ..\n");
 	}
 	void accept_() {
 		//accept : 접속자를 받기
@@ -125,6 +126,7 @@ public:
 
 	void connect_() {
 		connect(hSocket, (SOCKADDR*)&servAddr, sizeof(servAddr));
+		cout << "접속 성공! "<<endl;
 	}
 
 	void echo_test() {
@@ -256,6 +258,7 @@ private:
 	int mark; // O : 1, X : 2
 	char mark_char; // O, X 
 	bool is_ai; // 0 : player , 1 : AI
+	bool is_server;
 	int player_num; // 1P , 2P
 	Position position;
 public:
@@ -263,6 +266,7 @@ public:
 		mark = 0;
 		mark_char = 'O';
 		is_ai = false;
+		is_server = false;
 		player_num = 0;
 		position.x = 9;
 		position.y = 9;
@@ -274,6 +278,12 @@ public:
 	void set_position(int x, int y) {
 		this->position.x = x;
 		this->position.y = y;
+	}
+	void set_is_server(bool is_server) {
+		this->is_server = is_server;
+	}
+	bool get_is_server() {
+		return this->is_server;
 	}
 	Position get_position() {
 		return this->position;
@@ -453,10 +463,6 @@ public:
 		gotoxy(19, y);
 		cout << p << " 차례 입니다" << endl;
 		gotoxy(5, y + 9);
-		//cout << "진행중인 게임";
-		//gotoxy(0, y + 11);
-		//map.show_map();
-
 
 		x = a.get_position().x;
 		y = a.get_position().y;
@@ -593,9 +599,14 @@ public:
 			if (menu_code == 0) {
 				system("cls");
 
-				this->mode = draw_player_choice() + 1;
+				
+
+				this->mode = draw_player_choice() + 1; // 모드 선택.
 				system("cls");
 				title_show();
+				
+
+
 				break;
 			}
 			else {
@@ -613,38 +624,55 @@ public:
 
 		bool input_ox_check = 1;
 		system("cls");
-		//title_show();
+	
+
 		int temp = draw_player_ox();
 
 		Player* p;
 		if (temp == 0) {
+			//여기서 server on
+			server.bind_();
+			server.listen_();
+			server.accept_();
+
 			p = &p1;
 			p->set_mark(1);
 			p->set_is_ai(0);
 			p->set_player_num(1);
 			p->set_mark_char('O');
+
+			p->set_is_server(1); // 1P가 Server 함 
+
 			p = &p2;
 			p->set_mark(2);
 			p->set_player_num(2);
 			p->set_mark_char('X');
+
+			p->set_is_server(0); // 2P는 Client
+
+
 			if (this->mode == 1) {
 				p->set_is_ai(1);
 			}
 			else {
 				p->set_is_ai(0);
+				
 			}
-
+			 
 		}
 		else if (temp == 1) {
+			client.connect_(); // 예외처리 할것.
 			p = &p1;
 			p->set_mark(2);
 			p->set_is_ai(0);
 			p->set_player_num(1);
 			p->set_mark_char('X');
+			p->set_is_server(1); // 1P가 Server 함 
 			p = &p2;
 			p->set_mark(1);
 			p->set_player_num(2);
 			p->set_mark_char('O');
+			p->set_is_server(0); // 2P는 Client
 			if (this->mode == 1) {
 				p->set_is_ai(1);
 			}
@@ -676,7 +704,7 @@ public:
 			bool drop_success = 0;
 			int is_full = 0;
 
-			//P1
+			//P1 , p1 이 서버
 			mark_xy = drop_marker_consol(p1);
 			map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p1.get_mark());
 			gotoxy(9 - 5, 9 + 5);
