@@ -1,12 +1,18 @@
-Ôªø#include <iostream>
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <winsock2.h>
+#include <stdlib.h>
+#include <time.h>
+#include <iostream>
 #include <random>
 #include <tuple>
 #include <random>
 #include <windows.h>
 #include <conio.h>
-#include <stdlib.h>
 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
+#define BUFSIZE 1024
 using namespace std;
 
 #define UP 0
@@ -14,6 +20,11 @@ using namespace std;
 #define LEFT 2
 #define RIGHT 3
 #define SUBMIT 4
+
+#define RED "\x1b[31m"
+#define GREEN "\x1b[32m"
+#define RESET "\x1b[0m"
+
 
 char show_list[] = { ' ', 'O', 'X' };
 
@@ -43,6 +54,111 @@ int keyConsol() {
 		return SUBMIT;
 	}
 }
+class Server {
+private:
+	WSADATA wsaData;
+	SOCKET hServSock;
+	SOCKADDR_IN servAddr;
+
+	int clientLen;
+	SOCKET hClientSock;
+	SOCKADDR clientAddr;
+
+public:
+	Server() {
+		WSAStartup(MAKEWORD(2, 2), &wsaData);
+		//º“ƒœ ª˝º∫
+		hServSock = socket(PF_INET, SOCK_STREAM, 0);
+		printf("socket ª˝º∫ º∫∞¯\n");
+		//πŸ¿Œµ˘ : º≠πˆø™«“ºˆ«‡
+		servAddr.sin_family = AF_INET;
+		//IPº≥¡§ : INADDR_ANY ¿⁄Ω≈¿« IP¡÷º“∏¶ »πµÊ
+		servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+		//Portº≥¡§
+		servAddr.sin_port = htons(5555);
+	}
+
+	void bind_() {
+		bind(hServSock, (SOCKADDR*)&servAddr, sizeof(servAddr));
+		printf("bind() º∫∞¯\n");
+	}
+	void listen_() {
+		listen(hServSock, 5);
+		printf("listen() º∫∞¯\n");
+	}
+	void accept_() {
+		//accept : ¡¢º”¿⁄∏¶ πﬁ±‚
+		clientLen = sizeof(clientAddr);
+		hClientSock = accept(hServSock, (SOCKADDR*)&clientAddr, &clientLen);
+		printf("≈¨∂Û¿Ãæ∆Æ ¡¢º” º∫∞¯");
+	}
+	void close_() {
+		closesocket(hClientSock);
+		WSACleanup();
+	}
+	void echo_() {
+		int strLen = 0;
+		char message[BUFSIZE] = "";
+		while ((strLen = recv(hClientSock, message, BUFSIZE, 0)) != 0) {
+			printf("recv, check : %s\n", message);
+			send(hClientSock, message, strlen(message), 0);
+			memset(message, 0, sizeof(message));
+		}
+	}
+};
+
+class Client {
+private:
+	WSADATA wsaData;
+	SOCKET hSocket;
+	SOCKADDR_IN servAddr;
+
+public:
+	Client() {
+		WSAStartup(MAKEWORD(2, 2), &wsaData);
+		hSocket = socket(PF_INET, SOCK_STREAM, 0);
+		memset(&servAddr, 0, sizeof(servAddr));
+		servAddr.sin_family = AF_INET;
+		servAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // 127.0.0.1 ¿⁄Ω≈¿« ip æÀæ∆º≠ «‘
+		servAddr.sin_port = htons(5555);
+	}
+
+	void connect_() {
+		connect(hSocket, (SOCKADDR*)&servAddr, sizeof(servAddr));
+	}
+
+	void echo_test() {
+		char message[BUFSIZE] = "";
+		while (1) {
+
+			fputs("¿¸º€«“ ∏ﬁºº¡ˆ∏¶ ¿‘∑¬«œººø‰. (q to quit) : ", stdout);
+			//fgets(message, BUFSIZE, stdin);
+			cin >> message;
+			//message[strlen(message) - 1] = '\0';
+
+			//q ¿‘∑¬ Ω√ π´«—∑Á«¡ ≈ª√‚
+			if (!strcmp(message, "q")) {
+				this->close_();
+				break;
+			}
+
+			//¿¸º€
+			printf("¿¸º€«œ¥¬ ∏ﬁºº¡ˆ : %s\n", message);
+			int strLen = send(hSocket, message, strlen(message), 0);
+			//πﬁ±‚
+			strLen = recv(hSocket, message, BUFSIZE - 1, 0); // µø±‚, πﬁ¿∫∞‘ message∑Œ µÈæÓ∞®
+			//printf("%d\n", strLen);
+			message[strLen] = 0;
+			printf("º≠πˆ∑Œ ∫Œ≈Õ ¿¸º€µ» ∏ﬁºº¡ˆ :  %s \n", message);
+		}
+	}
+	void close_() {
+		closesocket(hSocket);
+		WSACleanup();
+	}
+
+};
+
 
 class Map {
 private:
@@ -58,18 +174,40 @@ public:
 	}
 	void show_map() {
 		for (int i = 0; i < 3; i++) {
-			cout << "      ---|---|---" << endl;
-			cout << "       " << show_list[map[i][0]] << " | " << show_list[map[i][1]] << " | " << show_list[map[i][2]] << endl;
+			//cout <<"      ---|---|---" << endl;
+			//cout <<"       " << show_list[map[i][0]] << " | " << show_list[map[i][1]] << " | " << show_list[map[i][2]] << endl;
+			printf("      ---|---|---\n");
+			if (show_list[map[i][0]] == 'O') {
+				printf("       %s%c%s", GREEN, show_list[map[i][0]], RESET);
+			}
+			else {
+				printf("       %s%c%s", RED, show_list[map[i][0]], RESET);
+			}
+
+			printf(" | ");
+			if (show_list[map[i][1]] == 'O') {
+				printf("%s%c%s", GREEN, show_list[map[i][1]], RESET);
+			}
+			else {
+				printf("%s%c%s", RED, show_list[map[i][1]], RESET);
+			}
+			printf(" | ");
+			if (show_list[map[i][2]] == 'O') {
+				printf("%s%c%s\n", GREEN, show_list[map[i][2]], RESET);
+			}
+			else {
+				printf("%s%c%s\n", RED, show_list[map[i][2]], RESET);
+			}
 		}
 	}
 
-	bool set_mark(int y, int x, int mark) { // ÎèåÎÜìÍ∏∞
+	bool set_mark(int y, int x, int mark) { // µπ≥ı±‚
 		if (map[y][x] == 0) {
 			this->map[y][x] = mark;
 			return 1;
 		}
 		else {
-			//cout << "Ïò≥Î∞îÎ•∏ ÏúÑÏπòÏóê ÎÜìÏúºÏÑ∏Ïöî" << endl;
+			//cout << "ø«πŸ∏• ¿ßƒ°ø° ≥ı¿∏ººø‰" << endl;
 			return 0;
 		}
 	}
@@ -86,26 +224,31 @@ public:
 		return temp;
 	}
 	int check_map() {
-		//Í∞ÄÎ°ú
+		//∞°∑Œ
 		for (int i = 0; i < 3; i++) {
 			if (((map[i][0] == map[i][1]) && (map[i][1] == map[i][2]) && (map[i][0] == map[i][2])) && (map[i][0] != 0) && (map[i][1] != 0) && (map[i][2] != 0)) {
 				return map[i][0];
 			}
 		}
-		//ÏÑ∏Î°ú
+		//ºº∑Œ
 		for (int i = 0; i < 3; i++) {
 			if (((map[0][i] == map[1][i]) && (map[1][i] == map[2][i]) && (map[0][i] == map[2][i])) && (map[0][i] != 0) && (map[1][i] != 0) && (map[2][i] != 0)) {
 				return map[0][i];
 			}
 		}
-		//ÎåÄÍ∞ÅÏÑ†
+		//¥Î∞¢º±
 		if ((map[0][0] == map[1][1]) && (map[1][1] == map[2][2]) && (map[0][0] != 0) && (map[1][1] != 0) && (map[2][2] != 0)
 			|| (map[0][2] == map[1][1]) && (map[1][1] == map[2][0]) && (map[0][2] != 0) && (map[1][1] != 0) && (map[2][0] != 0)) {
 			return map[1][1];
 		}
-		//ÏóÜÏùå
+		//æ¯¿Ω
 		return 0;
 	}
+};
+
+struct Position {
+	int x;
+	int y;
 };
 
 class Player {
@@ -114,16 +257,26 @@ private:
 	char mark_char; // O, X 
 	bool is_ai; // 0 : player , 1 : AI
 	int player_num; // 1P , 2P
+	Position position;
 public:
 	Player() {
 		mark = 0;
 		mark_char = 'O';
 		is_ai = false;
 		player_num = 0;
+		position.x = 9;
+		position.y = 9;
 	}
 	Player(int mark, bool is_ai) {
 		this->mark = mark;
 		this->is_ai = is_ai;
+	}
+	void set_position(int x, int y) {
+		this->position.x = x;
+		this->position.y = y;
+	}
+	Position get_position() {
+		return this->position;
 	}
 	void set_mark(int mark) {
 		this->mark = mark;
@@ -166,7 +319,7 @@ public:
 			x = dis(gen);
 		}
 		else {
-			cout << this->player_num << "P  " << "(y, x)Ï¢åÌëúÎ•º ÏûÖÎ†•ÌïòÏÑ∏Ïöî >> ";
+			cout << this->player_num << "P  " << "(y, x)¡¬«•∏¶ ¿‘∑¬«œººø‰ >> ";
 			cin >> y >> x;
 		}
 
@@ -182,6 +335,8 @@ private:
 	int turn_count;
 	Player p1;
 	Player p2;
+	Server server;
+	Client client;
 	Map map;
 public:
 	Game() {
@@ -207,11 +362,11 @@ public:
 		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y - 1);
-		cout << "<<  1P, 2P ÏÑ†ÌÉù  >>" << endl;
+		cout << "<<  1P, 2P º±≈√  >>" << endl;
 		gotoxy(x - 2, y);
-		cout << "> 1Ïù∏Ïö©";
+		cout << "> 1¿ŒøÎ";
 		gotoxy(x, y + 1);
-		cout << "2Ïù∏Ïö©";
+		cout << "2¿ŒøÎ";
 		gotoxy(x, y + 2);
 		cout << endl;
 		while (1) {
@@ -248,10 +403,10 @@ public:
 		int y = 12;
 
 		gotoxy(x - 2, y - 1);
-		cout << "<<  O,XÏ§ë ÏÇ¨Ïö©Ìï†Í≤É ÏÑ†ÌÉù  >>" << endl;
-		gotoxy(x - 2 , y);
+		cout << "<<  O,X¡ﬂ ªÁøÎ«“∞Õ º±≈√  >>" << endl;
+		gotoxy(x - 2, y);
 		cout << "> O";
-		gotoxy(x , y + 1);
+		gotoxy(x, y + 1);
 		cout << "X";
 		gotoxy(x, y + 2);
 		cout << endl;
@@ -283,7 +438,7 @@ public:
 		}
 	}
 
-	tuple<int, int> drop_marker_consol(Player a) {
+	tuple<int, int> drop_marker_consol(Player& a) {
 		int x = 9;
 		int y = 9;
 		int left_count = 0;
@@ -291,22 +446,29 @@ public:
 		int up_count = 0;
 		int down_count = 0;
 		char p = a.get_mark_char();
-		
+
 		system("cls");
 		title_show();
 		map.show_map();
 		gotoxy(19, y);
-		cout << p << " Ï∞®Î°Ä ÏûÖÎãàÎã§" << endl;
+		cout << p << " ¬˜∑  ¿‘¥œ¥Ÿ" << endl;
 		gotoxy(5, y + 9);
-		//cout << "ÏßÑÌñâÏ§ëÏù∏ Í≤åÏûÑ";
+		//cout << "¡¯«‡¡ﬂ¿Œ ∞‘¿”";
 		//gotoxy(0, y + 11);
 		//map.show_map();
 
 
+		x = a.get_position().x;
+		y = a.get_position().y;
 
 		gotoxy(x - 2, y);
 		cout << ">";
+		int x_ = x;
+		int y_ = y;
 		while (1) {
+			//gotoxy(26, 26);
+			//cout << "(" << x << " " << y << ")" << endl;
+			//cout << "(" << x_ << " " << y_ << ")";
 			int n = keyConsol();
 			switch (n) {
 			case UP: { // 
@@ -318,9 +480,10 @@ public:
 					map.show_map();
 					gotoxy(x - 2, ----y);
 
-					printf("%c",p);
+					printf("%c", p);
 					up_count--;
-					
+					y_ -= 2;
+
 				}
 				break;
 			}
@@ -334,6 +497,7 @@ public:
 					gotoxy(x - 2, ++++y);
 					printf("%c", p);
 					down_count++;
+					y_ += 2;
 				}
 				break;
 			}
@@ -347,6 +511,7 @@ public:
 					gotoxy(--------x - 2, y);
 					printf("%c", p);
 					left_count--;
+					x_ -= 4;
 				}
 				break;
 			}
@@ -360,12 +525,23 @@ public:
 					gotoxy(++++++++x - 2, y);
 					printf("%c", p);
 					right_count++;
+					x_ += 4;
 				}
 				break;
 			}
 			case SUBMIT: {
-				if (map.get_position_mark(up_count + down_count, left_count + right_count) == 0) {
-					tuple<int, int> v = make_tuple(up_count + down_count, left_count + right_count);
+				int y_mapping[18] = { 0, };
+				int x_mapping[18] = { 0, };
+				y_mapping[9] = 0;
+				y_mapping[11] = 1;
+				y_mapping[13] = 2;
+				x_mapping[9] = 0;
+				x_mapping[13] = 1;
+				x_mapping[17] = 2;
+
+				if (map.get_position_mark(y_mapping[y], x_mapping[x]) == 0) {
+					tuple<int, int> v = make_tuple(y_mapping[y], x_mapping[x]);
+					a.set_position(x_, y_);
 					return v;
 				}
 
@@ -379,10 +555,10 @@ public:
 		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y);
-		cout << "> Í≤åÏûÑÏãúÏûë";
+		cout << "> ∞‘¿”Ω√¿€";
 
 		gotoxy(x, y + 1);
-		cout << " Ï¢ÖÎ£å ";
+		cout << " ¡æ∑· ";
 		cout << endl;
 		while (1) {
 			int n = keyConsol();
@@ -503,19 +679,19 @@ public:
 			//P1
 			mark_xy = drop_marker_consol(p1);
 			map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p1.get_mark());
-			gotoxy(9 - 5 , 9 + 5);
+			gotoxy(9 - 5, 9 + 5);
 
 			check = map.check_map();
 			is_full = map.is_full();
 			if (check || !is_full) {
 				if (check) {
-					cout << "<< " << show_list[check] << "Í∞Ä Ïù¥Í≤ºÏäµÎãàÎã§. >>" << endl;
+					cout << "<< " << show_list[check] << "∞° ¿Ã∞ÂΩ¿¥œ¥Ÿ. >>" << endl;
 					gotoxy(0, 0);
 					title_show();
 					map.show_map();
 				}
 				else {
-					cout << "<< " << "Î¨¥ÏäπÎ∂Ä ÏûÖÎãàÎã§. >>" << endl;
+					cout << "<< " << "π´Ω¬∫Œ ¿‘¥œ¥Ÿ. >>" << endl;
 					gotoxy(0, 0);
 					title_show();
 					map.show_map();
@@ -535,24 +711,28 @@ public:
 				mark_xy = drop_marker_consol(p2);
 				map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p2.get_mark());
 				gotoxy(9 - 5, 9 + 5);
-				map.show_map();
+				//map.show_map();
 			}
 			//gotoxy(9 - 2 + 10, 9 + 10);
 			//map.show_map();
 			check = map.check_map();
 			if (check) {
+				cout << "<< " << show_list[check] << "∞° ¿Ã∞ÂΩ¿¥œ¥Ÿ. >>" << endl;
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
-				cout << "<< " << show_list[check] << "Í∞Ä Ïù¥Í≤ºÏäµÎãàÎã§. >>" << endl;
 				turn_count = 0;
+				break;
+
+
+
 			}
 			turn_count--;
 
 		}
 
 		char a = 0;
-		cout << "\n  ÏïÑÎ¨¥ ÌÇ§ÎÇò ÎàåÎü¨ ÌÉÄÏù¥ÌãÄÎ°ú.." << endl;
+		cout << "\n  æ∆π´ ≈∞≥™ ¥≠∑Ø ≈∏¿Ã∆≤∑Œ.." << endl;
 		a = _getch();
 		if (a) {
 			return;
@@ -566,8 +746,8 @@ public:
 
 
 int main() {
-	//ÏàòÏ†ï ÌÖåÏä§Ìä∏
-	
+	//ºˆ¡§ ≈◊Ω∫∆Æ 
+
 
 	while (1) {
 		system("cls");
