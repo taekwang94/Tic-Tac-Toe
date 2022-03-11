@@ -106,6 +106,22 @@ public:
 			memset(message, 0, sizeof(message));
 		}
 	}
+	void send_position(int y, int x, int mark) {
+		char message[BUFSIZE] = "";
+		char y_[10] = "";
+		char x_[10] = "";
+		char mark_[10] = "";
+		sprintf(y_, "%d", y);
+		sprintf(x_, "%d", x);
+		sprintf(mark_, "%d", mark);
+		
+		strcat(message, y_);
+		strcat(message, x_);
+		strcat(message, mark_);
+		printf("recv, check : %s\n", message);
+		send(hClientSock, message, strlen(message), 0);
+		memset(message, 0, sizeof(message));
+	}
 };
 
 class Client {
@@ -154,6 +170,31 @@ public:
 			printf("서버로 부터 전송된 메세지 :  %s \n", message);
 		}
 	}
+	void recv_position() {
+		char message[BUFSIZE] = "";
+		int strLen = 0;
+		while ((strLen = recv(hSocket, message, BUFSIZE, 0)) != 0) {
+			message[strLen] = 0;
+			printf("서버로 부터 전송된 메세지 :  %s \n", message);
+		}	
+	}
+	void send_position(int y, int x, int mark) {
+		char message[BUFSIZE] = "";
+		char y_[10] = "";
+		char x_[10] = "";
+		char mark_[10] = "";
+		sprintf(y_, "%d", y);
+		sprintf(x_, "%d", x);
+		sprintf(mark_, "%d", mark);
+
+		strcat(message, y_);
+		strcat(message, x_);
+		strcat(message, mark_);
+		printf("recv, check : %s\n", message);
+		send(hSocket, message, strlen(message), 0);
+		memset(message, 0, sizeof(message));
+	}
+
 	void close_() {
 		closesocket(hSocket);
 		WSACleanup();
@@ -691,7 +732,7 @@ public:
 			return;
 		}
 		set_mode();
-		set_player_inform();
+		set_player_inform(); // server client connection 완료
 		system("cls");
 		title_show();
 		while (turn_count) {
@@ -705,8 +746,18 @@ public:
 			int is_full = 0;
 
 			//P1 , p1 이 서버
-			mark_xy = drop_marker_consol(p1);
-			map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p1.get_mark());
+			if (p1.get_is_server()) {
+				mark_xy = drop_marker_consol(p1);
+				int temp_y = get<0>(mark_xy);
+				int temp_x = get<1>(mark_xy);
+				int temp_mark = p1.get_mark();
+				map.set_mark(temp_y, temp_x, temp_mark);
+				server.send_position(temp_y, temp_x, temp_mark);
+				
+				break;
+			}
+			
+			
 			gotoxy(9 - 5, 9 + 5);
 
 			check = map.check_map();
@@ -736,6 +787,9 @@ public:
 				} while (!drop_success);
 			}
 			else {
+				if (!p2.get_is_server()) {
+					client.recv_position();
+				}
 				mark_xy = drop_marker_consol(p2);
 				map.set_mark(get<0>(mark_xy), get<1>(mark_xy), p2.get_mark());
 				gotoxy(9 - 5, 9 + 5);
