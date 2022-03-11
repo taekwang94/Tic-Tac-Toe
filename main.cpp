@@ -744,7 +744,7 @@ public:
 			tuple<int, int> mark_xy;
 			bool drop_success = 0;
 			int is_full = 0;
-
+			 
 			//P1 , p1 ÀÌ ¼­¹צ
 			if (p1.get_is_server()) {
 				mark_xy = drop_marker_consol(p1);
