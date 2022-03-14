@@ -68,14 +68,14 @@ private:
 public:
 	Server() {
 		WSAStartup(MAKEWORD(2, 2), &wsaData);
-		//¼ÒÄÏ »ı¼º
+		//ì†Œì¼“ ìƒì„±
 		hServSock = socket(PF_INET, SOCK_STREAM, 0);
-		//printf("socket »ı¼º ¼º°ø\n");
-		//¹ÙÀÎµù : ¼­¹ö¿ªÇÒ¼öÇà
+		//printf("socket ìƒì„± ì„±ê³µ\n");
+		//ë°”ì¸ë”© : ì„œë²„ì—­í• ìˆ˜í–‰
 		servAddr.sin_family = AF_INET;
-		//IP¼³Á¤ : INADDR_ANY ÀÚ½ÅÀÇ IPÁÖ¼Ò¸¦ È¹µæ
+		//IPì„¤ì • : INADDR_ANY ìì‹ ì˜ IPì£¼ì†Œë¥¼ íšë“
 		servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-		//Port¼³Á¤
+		//Portì„¤ì •
 		servAddr.sin_port = htons(5555);
 	}
 
@@ -83,11 +83,11 @@ public:
 		int flag;
 		flag = bind(hServSock, (SOCKADDR*)&servAddr, sizeof(servAddr));
 		if (!flag) {
-			printf("bind() ¼º°ø\n");
+			printf("bind() ì„±ê³µ\n");
 			return 1;
 		}
 		else {
-			printf("bind() ½ÇÆĞ\n");
+			printf("bind() ì‹¤íŒ¨\n");
 			return 0;
 		}
 		
@@ -96,21 +96,21 @@ public:
 		int flag;
 		flag = listen(hServSock, 5);
 		if (!flag) {
-			printf("listen() ¼º°ø\n");
-			printf("Client¸¦ ±â´Ù¸®´ÂÁß ..\n");
+			printf("listen() ì„±ê³µ\n");
+			printf("Clientë¥¼ ê¸°ë‹¤ë¦¬ëŠ”ì¤‘ ..\n");
 			return 1;
 		}
 		else {
-			printf("listen() ½ÇÆĞ\n");
+			printf("listen() ì‹¤íŒ¨\n");
 			return 0;
 		}
 		
 	}
 	void accept_() {
-		//accept : Á¢¼ÓÀÚ¸¦ ¹Ş±â
+		//accept : ì ‘ì†ìë¥¼ ë°›ê¸°
 		clientLen = sizeof(clientAddr);
 		hClientSock = accept(hServSock, (SOCKADDR*)&clientAddr, &clientLen);
-		printf("Å¬¶óÀÌ¾ğÆ® Á¢¼Ó ¼º°ø");
+		printf("í´ë¼ì´ì–¸íŠ¸ ì ‘ì† ì„±ê³µ");
 	}
 	void close_() {
 		closesocket(hClientSock);
@@ -133,7 +133,7 @@ public:
 	void send_message() {
 		int strLen = 0;
 		char message[BUFSIZE] = "";
-		//fputs("Àü¼ÛÇÒ ¸Ş¼¼Áö¸¦ ÀÔ·ÂÇÏ¼¼¿ä. (q to quit) : ", stdout);
+		//fputs("ì „ì†¡í•  ë©”ì„¸ì§€ë¥¼ ì…ë ¥í•˜ì„¸ìš”. (q to quit) : ", stdout);
 		//fgets(message, BUFSIZE, stdin);
 		while ((strLen = recv(hClientSock, message, BUFSIZE, 0)) != 0) {
 			printf("recv, check : %s\n", message);
@@ -176,7 +176,7 @@ public:
 		hSocket = socket(PF_INET, SOCK_STREAM, 0);
 		memset(&servAddr, 0, sizeof(servAddr));
 		servAddr.sin_family = AF_INET;
-		servAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // 127.0.0.1 ÀÚ½ÅÀÇ ip ¾Ë¾Æ¼­ ÇÔ
+		servAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // 127.0.0.1 ìì‹ ì˜ ip ì•Œì•„ì„œ í•¨
 		servAddr.sin_port = htons(5555);
 	}
 	void set_ip(const char* ip) {
@@ -192,11 +192,11 @@ public:
 		int c = -1;
 		c = connect(hSocket, (SOCKADDR*)&servAddr, sizeof(servAddr));
 		if (c == 0) {
-			cout << "Á¢¼Ó ¼º°ø! " << endl;
+			cout << "ì ‘ì† ì„±ê³µ! " << endl;
 			return 1;
 		}
 		else {
-			cout << "Á¢¼Ó ½ÇÆĞ" << endl;
+			cout << "ì ‘ì† ì‹¤íŒ¨" << endl;
 			return 0;
 		}
 
@@ -206,25 +206,25 @@ public:
 		char message[BUFSIZE] = "";
 		while (1) {
 
-			//fputs("Àü¼ÛÇÒ ¸Ş¼¼Áö¸¦ ÀÔ·ÂÇÏ¼¼¿ä. (q to quit) : ", stdout);
+			//fputs("ì „ì†¡í•  ë©”ì„¸ì§€ë¥¼ ì…ë ¥í•˜ì„¸ìš”. (q to quit) : ", stdout);
 			//fgets(message, BUFSIZE, stdin);
 			cin >> message;
 			//message[strlen(message) - 1] = '\0';
 
-			//q ÀÔ·Â ½Ã ¹«ÇÑ·çÇÁ Å»Ãâ
+			//q ì…ë ¥ ì‹œ ë¬´í•œë£¨í”„ íƒˆì¶œ
 			if (!strcmp(message, "q")) {
 				this->close_();
 				break;
 			}
 
-			//Àü¼Û
-			printf("Àü¼ÛÇÏ´Â ¸Ş¼¼Áö : %s\n", message);
+			//ì „ì†¡
+			printf("ì „ì†¡í•˜ëŠ” ë©”ì„¸ì§€ : %s\n", message);
 			int strLen = send(hSocket, message, strlen(message), 0);
-			//¹Ş±â
-			strLen = recv(hSocket, message, BUFSIZE - 1, 0); // µ¿±â, ¹ŞÀº°Ô message·Î µé¾î°¨
+			//ë°›ê¸°
+			strLen = recv(hSocket, message, BUFSIZE - 1, 0); // ë™ê¸°, ë°›ì€ê²Œ messageë¡œ ë“¤ì–´ê°
 			//printf("%d\n", strLen);
 			message[strLen] = 0;
-			printf("¼­¹ö·Î ºÎÅÍ Àü¼ÛµÈ ¸Ş¼¼Áö :  %s \n", message);
+			printf("ì„œë²„ë¡œ ë¶€í„° ì „ì†¡ëœ ë©”ì„¸ì§€ :  %s \n", message);
 		}
 	}
 	void recv_position() {
@@ -234,15 +234,15 @@ public:
 		while ((strLen = recv(hSocket, message, BUFSIZE, 0)) != 0) {
 
 			cout << message << " " << strLen;
-			message[strLen] = 0; // ¿©±â¼­ ¿¹¿Ü ¹ß»ı , strLen : -1 messsage ¸ø¹Ş°í ÀÖ´Âµí
-			printf("¼­¹ö·Î ºÎÅÍ Àü¼ÛµÈ ¸Ş¼¼Áö :  %s \n", message);
+			message[strLen] = 0; // ì—¬ê¸°ì„œ ì˜ˆì™¸ ë°œìƒ , strLen : -1 messsage ëª»ë°›ê³  ìˆëŠ”ë“¯
+			printf("ì„œë²„ë¡œ ë¶€í„° ì „ì†¡ëœ ë©”ì„¸ì§€ :  %s \n", message);
 
 		}
 		*/
 		strLen = recv(hSocket, message, BUFSIZE, 0);
 		cout << "!@#@!#@!#@!#@!#@!#!" << message << " " << strLen;
-		message[strLen] = 0; // ¿©±â¼­ ¿¹¿Ü ¹ß»ı , strLen : -1 messsage ¸ø¹Ş°í ÀÖ´Âµí
-		printf("¼­¹ö·Î ºÎÅÍ Àü¼ÛµÈ ¸Ş¼¼Áö :  %s \n", message);
+		message[strLen] = 0; // ì—¬ê¸°ì„œ ì˜ˆì™¸ ë°œìƒ , strLen : -1 messsage ëª»ë°›ê³  ìˆëŠ”ë“¯
+		printf("ì„œë²„ë¡œ ë¶€í„° ì „ì†¡ëœ ë©”ì„¸ì§€ :  %s \n", message);
 	}
 	void send_position(int y, int x, int mark) {
 		char message[BUFSIZE] = "";
@@ -318,13 +318,13 @@ public:
 		}
 	}
 
-	bool set_mark(int y, int x, int mark) { // µ¹³õ±â
+	bool set_mark(int y, int x, int mark) { // ëŒë†“ê¸°
 		if (map[y][x] == 0) {
 			this->map[y][x] = mark;
 			return 1;
 		}
 		else {
-			//cout << "¿Ç¹Ù¸¥ À§Ä¡¿¡ ³õÀ¸¼¼¿ä" << endl;
+			//cout << "ì˜³ë°”ë¥¸ ìœ„ì¹˜ì— ë†“ìœ¼ì„¸ìš”" << endl;
 			return 0;
 		}
 	}
@@ -341,24 +341,24 @@ public:
 		return temp;
 	}
 	int check_map() {
-		//°¡·Î
+		//ê°€ë¡œ
 		for (int i = 0; i < 3; i++) {
 			if (((map[i][0] == map[i][1]) && (map[i][1] == map[i][2]) && (map[i][0] == map[i][2])) && (map[i][0] != 0) && (map[i][1] != 0) && (map[i][2] != 0)) {
 				return map[i][0];
 			}
 		}
-		//¼¼·Î
+		//ì„¸ë¡œ
 		for (int i = 0; i < 3; i++) {
 			if (((map[0][i] == map[1][i]) && (map[1][i] == map[2][i]) && (map[0][i] == map[2][i])) && (map[0][i] != 0) && (map[1][i] != 0) && (map[2][i] != 0)) {
 				return map[0][i];
 			}
 		}
-		//´ë°¢¼±
+		//ëŒ€ê°ì„ 
 		if ((map[0][0] == map[1][1]) && (map[1][1] == map[2][2]) && (map[0][0] != 0) && (map[1][1] != 0) && (map[2][2] != 0)
 			|| (map[0][2] == map[1][1]) && (map[1][1] == map[2][0]) && (map[0][2] != 0) && (map[1][1] != 0) && (map[2][0] != 0)) {
 			return map[1][1];
 		}
-		//¾øÀ½
+		//ì—†ìŒ
 		return 0;
 	}
 };
@@ -490,9 +490,9 @@ public:
 		while (1) {
 			system("cls");
 			title_show();
-			cout << " IP¸¦ ÀÔ·ÂÇÏ¼¼¿ä >> ";
+			cout << " IPë¥¼ ì…ë ¥í•˜ì„¸ìš” >> ";
 			cin >> ip;
-			cout << " port ¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä >> ";
+			cout << " port ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš” >> ";
 			cin >> port_num;
 
 			client.set_ip(ip);
@@ -511,11 +511,11 @@ public:
 		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y - 1);
-		cout << "<<  1P, 2P ¼±ÅÃ  >>" << endl;
+		cout << "<<  1P, 2P ì„ íƒ  >>" << endl;
 		gotoxy(x - 2, y);
-		cout << "> 1ÀÎ¿ë";
+		cout << "> 1ì¸ìš©";
 		gotoxy(x, y + 1);
-		cout << "2ÀÎ¿ë";
+		cout << "2ì¸ìš©";
 		gotoxy(x, y + 2);
 		cout << endl;
 		while (1) {
@@ -552,7 +552,7 @@ public:
 		int y = 12;
 
 		gotoxy(x - 2, y - 1);
-		cout << "<<  O,XÁß »ç¿ëÇÒ°Í ¼±ÅÃ  >>" << endl;
+		cout << "<<  O,Xì¤‘ ì‚¬ìš©í• ê²ƒ ì„ íƒ  >>" << endl;
 		gotoxy(x - 2, y);
 		cout << "> O : Server";
 		gotoxy(x, y + 1);
@@ -601,7 +601,7 @@ public:
 		title_show();
 		map.show_map();
 		gotoxy(19, y);
-		cout << p << " Â÷·Ê ÀÔ´Ï´Ù" << endl;
+		cout << p << " ì°¨ë¡€ ì…ë‹ˆë‹¤" << endl;
 		gotoxy(5, y + 9);
 
 		x = a.get_position().x;
@@ -721,10 +721,10 @@ public:
 		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y);
-		cout << "> °ÔÀÓ½ÃÀÛ";
+		cout << "> ê²Œì„ì‹œì‘";
 
 		gotoxy(x, y + 1);
-		cout << " Á¾·á ";
+		cout << " ì¢…ë£Œ ";
 		cout << endl;
 		while (1) {
 			int n = keyConsol();
@@ -758,7 +758,7 @@ public:
 		while (1) {
 			if (menu_code == 0) {
 				system("cls");
-				this->mode = draw_player_choice() + 1; // ¸ğµå ¼±ÅÃ.
+				this->mode = draw_player_choice() + 1; // ëª¨ë“œ ì„ íƒ.
 
 				break;
 			}
@@ -779,7 +779,7 @@ public:
 		int ox_01 = -10;
 		if (play_count == 0) {
 			ox_01 = draw_player_ox();
-			if (ox_01 == 1 and mode == 2) { // X ¼±ÅÃÇÑ °æ¿ì ip ÀÔ·Â
+			if (ox_01 == 1 and mode == 2) { // X ì„ íƒí•œ ê²½ìš° ip ì…ë ¥
 				ip_setting();
 			}
 		}
@@ -791,7 +791,7 @@ public:
 		title_show();
 		Player* p;
 		if (ox_01 == 0) {
-			//¿©±â¼­ server on
+			//ì—¬ê¸°ì„œ server on
 			if (this->get_mode() == 2) {
 				int a, b;
 				a = server.bind_();
@@ -800,7 +800,7 @@ public:
 					server.accept_();
 				}
 				else {
-					cout << "¼­¹ö ¼¼ÆÃ ¿À·ù" << endl;
+					cout << "ì„œë²„ ì„¸íŒ… ì˜¤ë¥˜" << endl;
 					return 0;
 				}
 			}
@@ -810,14 +810,14 @@ public:
 			p->set_player_num(1);
 			p->set_mark_char('O');
 
-			p->set_is_server(1); // 1P°¡ Server ÇÔ 
+			p->set_is_server(1); // 1Pê°€ Server í•¨ 
 
 			p = &p2;
 			p->set_mark(2);
 			p->set_player_num(2);
 			p->set_mark_char('X');
 
-			p->set_is_server(0); // 2P´Â Client
+			p->set_is_server(0); // 2PëŠ” Client
 
 
 			if (this->mode == 1) {
@@ -836,12 +836,12 @@ public:
 			p->set_is_ai(0);
 			p->set_player_num(1);
 			p->set_mark_char('X');
-			p->set_is_server(1); // 1P°¡ Server ÇÔ 
+			p->set_is_server(1); // 1Pê°€ Server í•¨ 
 			p = &p2;
 			p->set_mark(1);
 			p->set_player_num(2);
 			p->set_mark_char('O');
-			p->set_is_server(0); // 2P´Â Client
+			p->set_is_server(0); // 2PëŠ” Client
 			if (this->mode == 1) {
 				p->set_is_ai(1);
 			}
@@ -865,7 +865,7 @@ public:
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
-				cout << "<< " << show_list[check] << "°¡ ÀÌ°å½À´Ï´Ù. >>" << endl;
+				cout << "<< " << show_list[check] << "ê°€ ì´ê²¼ìŠµë‹ˆë‹¤. >>" << endl;
 				return 0;
 			}
 			else {
@@ -873,7 +873,7 @@ public:
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
-				cout << "<< " << "¹«½ÂºÎ ÀÔ´Ï´Ù. >>" << endl;
+				cout << "<< " << "ë¬´ìŠ¹ë¶€ ì…ë‹ˆë‹¤. >>" << endl;
 				return 0;
 			}
 			turn_count = 0;
@@ -885,7 +885,7 @@ public:
 		int check;
 		check = map.check_map();
 		if (check) {
-			cout << "<< " << show_list[check] << "°¡ ÀÌ°å½À´Ï´Ù. >>" << endl;
+			cout << "<< " << show_list[check] << "ê°€ ì´ê²¼ìŠµë‹ˆë‹¤. >>" << endl;
 			gotoxy(0, 0);
 			title_show();
 			map.show_map();
@@ -904,12 +904,12 @@ public:
 			return;
 		}
 		set_mode();
-		server_setting = set_player_inform(); // server client connection ¿Ï·á
+		server_setting = set_player_inform(); // server client connection ì™„ë£Œ
 		system("cls");
 		title_show();
 		map.map_init();
 		switch (this->get_mode()) {
-		case 1: // 1ÀÎ¿ë
+		case 1: // 1ì¸ìš©
 		{
 			while (turn_count) {
 				if (this->turn_count < 0) {
@@ -919,7 +919,7 @@ public:
 				tuple<int, int> mark_xy;
 				bool drop_success = 0;
 
-				//P1 , p1 ÀÌ ¼­¹ö
+				//P1 , p1 ì´ ì„œë²„
 				mark_xy = drop_marker_consol(p1);
 				int temp_y = get<0>(mark_xy);
 				int temp_x = get<1>(mark_xy);
@@ -946,13 +946,13 @@ public:
 				turn_count--;
 			}
 			char a = 0;
-			cout << "\n  ¾Æ¹« Å°³ª ´­·¯ Å¸ÀÌÆ²·Î.." << endl;
+			cout << "\n  ì•„ë¬´ í‚¤ë‚˜ ëˆŒëŸ¬ íƒ€ì´í‹€ë¡œ.." << endl;
 			a = _getch();
 			if (a) {
 				return;
 			}
 		}
-		case 2: // 2ÀÎ¿ë
+		case 2: // 2ì¸ìš©
 		{	
 			if (server_setting) {
 				tuple<int, int, int> p;
@@ -969,10 +969,10 @@ public:
 					title_show();
 					map.show_map();
 					gotoxy(19, 9);
-					cout << " »ó´ë¹æÀ» ±â´Ù¸®´Â ÁßÀÔ´Ï´Ù" << endl;
+					cout << " ìƒëŒ€ë°©ì„ ê¸°ë‹¤ë¦¬ëŠ” ì¤‘ì…ë‹ˆë‹¤" << endl;
 					while ((strLen = recv(server.get_client_sock(), message, BUFSIZE, 0)) != 0) {
 						memset(winning_check, 0, sizeof(winning_check));
-						// recv·Î map ¼¼ÆÃ.
+						// recvë¡œ map ì„¸íŒ….
 						map.set_mark(message[0] - '0', message[1] - '0', message[2] - '0');
 						memset(message, 0, sizeof(message));
 						system("cls");
@@ -981,9 +981,9 @@ public:
 						// end check
 						end_checker = checker_p1();
 						if (!end_checker || (message[3] == '1')) {
-							//cout << p2.get_mark_char() << "°¡ ÀÌ°å½À´Ï´Ù." << endl;
+							//cout << p2.get_mark_char() << "ê°€ ì´ê²¼ìŠµë‹ˆë‹¤." << endl;
 							char a = 0;
-							cout << "\n ¾Æ¹« Å°³ª ´­·¯ Å¸ÀÌÆ²·Î.." << endl;
+							cout << "\n ì•„ë¬´ í‚¤ë‚˜ ëˆŒëŸ¬ íƒ€ì´í‹€ë¡œ.." << endl;
 							a = _getch();
 							if (a) {
 								play_count++;
@@ -995,7 +995,7 @@ public:
 							play_count++;
 							return;
 						}
-						// µ¹ ³õ±â
+						// ëŒ ë†“ê¸°
 						mark_xy = drop_marker_consol(p1);
 
 						temp_y = get<0>(mark_xy);
@@ -1011,7 +1011,7 @@ public:
 						else {
 							strcat(winning_check, "0");
 							gotoxy(19, 9);
-							cout << " »ó´ë¹æÀ» ±â´Ù¸®´Â ÁßÀÔ´Ï´Ù" << endl;
+							cout << " ìƒëŒ€ë°©ì„ ê¸°ë‹¤ë¦¬ëŠ” ì¤‘ì…ë‹ˆë‹¤" << endl;
 						}
 
 						char y_[10] = "";
@@ -1029,7 +1029,7 @@ public:
 						send(server.get_client_sock(), message, strlen(message), 0);
 						if (!end_checker || message[3] == '1') {
 							char a = 0;
-							cout << "\n  ¾Æ¹« Å°³ª ´­·¯ Å¸ÀÌÆ²·Î.." << endl;
+							cout << "\n  ì•„ë¬´ í‚¤ë‚˜ ëˆŒëŸ¬ íƒ€ì´í‹€ë¡œ.." << endl;
 							a = _getch();
 							if (a) {
 								play_count++;
@@ -1062,7 +1062,7 @@ public:
 						else {
 							strcat(winning_check, "0");
 							gotoxy(19, 9);
-							cout << " »ó´ë¹æÀ» ±â´Ù¸®´Â ÁßÀÔ´Ï´Ù" << endl;
+							cout << " ìƒëŒ€ë°©ì„ ê¸°ë‹¤ë¦¬ëŠ” ì¤‘ì…ë‹ˆë‹¤" << endl;
 						}
 
 						char y_[10] = "";
@@ -1078,14 +1078,14 @@ public:
 						strcat(message, winning_check);
 
 
-						//Àü¼Û
+						//ì „ì†¡
 						int strLen = send(client.get_sock(), message, strlen(message), 0);
 
 						// end check
 						if (!end_checker || (message[3] == '1')) {
-							//cout << p1.get_mark_char() << "°¡ ÀÌ°å½À´Ï´Ù." << endl;
+							//cout << p1.get_mark_char() << "ê°€ ì´ê²¼ìŠµë‹ˆë‹¤." << endl;
 							char a = 0;
-							cout << "\n  ¾Æ¹« Å°³ª ´­·¯ Å¸ÀÌÆ²·Î.." << endl;
+							cout << "\n  ì•„ë¬´ í‚¤ë‚˜ ëˆŒëŸ¬ íƒ€ì´í‹€ë¡œ.." << endl;
 							a = _getch();
 							if (a) {
 								play_count++;
@@ -1093,17 +1093,17 @@ public:
 							}
 						}
 						memset(message, 0, sizeof(message));
-						//¹Ş±â
-						strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0); // µ¿±â, ¹ŞÀº°Ô message·Î µé¾î°¨
+						//ë°›ê¸°
+						strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0); // ë™ê¸°, ë°›ì€ê²Œ messageë¡œ ë“¤ì–´ê°
 						map.set_mark(message[0] - '0', message[1] - '0', message[2] - '0');
 						system("cls");
 
 						// end check
 						end_checker = checker_p1();
 						if (!end_checker || (message[3] == '1')) {
-							//cout << p2.get_mark_char() << "°¡ ÀÌ°å½À´Ï´Ù." << endl;
+							//cout << p2.get_mark_char() << "ê°€ ì´ê²¼ìŠµë‹ˆë‹¤." << endl;
 							char a = 0;
-							cout << "\n  ¾Æ¹« Å°³ª ´­·¯ Å¸ÀÌÆ²·Î.." << endl;
+							cout << "\n  ì•„ë¬´ í‚¤ë‚˜ ëˆŒëŸ¬ íƒ€ì´í‹€ë¡œ.." << endl;
 							a = _getch();
 							if (a) {
 								play_count++;
@@ -1111,7 +1111,7 @@ public:
 							}
 						}
 						message[strLen] = 0;
-						//printf("¼­¹ö·Î ºÎÅÍ Àü¼ÛµÈ ¸Ş¼¼Áö :  %s \n", message);
+						//printf("ì„œë²„ë¡œ ë¶€í„° ì „ì†¡ëœ ë©”ì„¸ì§€ :  %s \n", message);
 						memset(message, 0, sizeof(message));
 						if (a) {
 							play_count++;
@@ -1127,13 +1127,9 @@ public:
 			else {
 			cout << "error" << endl;
 			return;
-}
-			
+}		
 		}
 		}
-
-
-
 	}
 
 };
@@ -1142,13 +1138,13 @@ public:
 
 
 int main() {
-	//¼öÁ¤ Å×½ºÆ® 
+	//ìˆ˜ì • í…ŒìŠ¤íŠ¸ 
 	//.
 	system("cls");
-	Game a;
+	Game game;
 	while (1) {
 
-		a.play();
+		game.play();
 		system("cls");
 	}
 
