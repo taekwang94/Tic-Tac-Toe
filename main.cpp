@@ -931,7 +931,7 @@ public:
 		case 2: // 2ÀÎ¿ë
 		{
 			tuple<int, int, int> p;
-			tuple<int, int> mark_xy;
+			tuple<int, int> mark_xy;  //.
 			int temp_y, temp_x, temp_mark;
 			bool drop_success = 0;
 
