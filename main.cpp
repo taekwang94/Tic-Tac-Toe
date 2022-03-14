@@ -114,7 +114,7 @@ public:
 	void send_message() {
 		int strLen = 0;
 		char message[BUFSIZE] = "";
-		fputs("전송할 메세지를 입력하세요. (q to quit) : ", stdout);
+		//fputs("전송할 메세지를 입력하세요. (q to quit) : ", stdout);
 		//fgets(message, BUFSIZE, stdin);
 		while ((strLen = recv(hClientSock, message, BUFSIZE, 0)) != 0) {
 			printf("recv, check : %s\n", message);
@@ -160,19 +160,34 @@ public:
 		servAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // 127.0.0.1 자신의 ip 알아서 함
 		servAddr.sin_port = htons(5555);
 	}
+	void set_ip(const char* ip) {
+		servAddr.sin_addr.s_addr = inet_addr(ip);
+	}
+	void set_port(int port_num) {
+		servAddr.sin_port = htons(port_num);
+	}
 	SOCKET get_sock() {
 		return this->hSocket;
 	}
-	void connect_() {
-		connect(hSocket, (SOCKADDR*)&servAddr, sizeof(servAddr));
-		cout << "접속 성공! "<<endl;
+	int connect_() {
+		int c = -1;
+		c = connect(hSocket, (SOCKADDR*)&servAddr, sizeof(servAddr));
+		if (c == 0) {
+			cout << "접속 성공! " << endl;
+			return 1;
+		}
+		else {
+			cout << "접속 실패" << endl;
+			return 0;
+		}
+		
 	}
 
 	void echo_test() {
 		char message[BUFSIZE] = "";
 		while (1) {
 
-			fputs("전송할 메세지를 입력하세요. (q to quit) : ", stdout);
+			//fputs("전송할 메세지를 입력하세요. (q to quit) : ", stdout);
 			//fgets(message, BUFSIZE, stdin);
 			cin >> message;
 			//message[strlen(message) - 1] = '\0';
@@ -236,21 +251,6 @@ public:
 
 };
 
-const char* make_position_message(int y, int x, int mark) {
-	char message[BUFSIZE] = "";
-	char y_[10] = "";
-	char x_[10] = "";
-	char mark_[10] = "";
-	sprintf(y_, "%d", y);
-	sprintf(x_, "%d", x);
-	sprintf(mark_, "%d", mark);
-
-	strcat(message, y_);
-	strcat(message, x_);
-	strcat(message, mark_);
-	return message;
-}
-
 class Map {
 private:
 	int map[3][3];
@@ -263,10 +263,17 @@ public:
 			}
 		}
 	}
+
+	void map_init() {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				map[i][j] = 0;
+			}
+		}
+	}
+
 	void show_map() {
 		for (int i = 0; i < 3; i++) {
-			//cout <<"      ---|---|---" << endl;
-			//cout <<"       " << show_list[map[i][0]] << " | " << show_list[map[i][1]] << " | " << show_list[map[i][2]] << endl;
 			printf("      ---|---|---\n");
 			if (show_list[map[i][0]] == 'O') {
 				printf("       %s%c%s", GREEN, show_list[map[i][0]], RESET);
@@ -410,17 +417,13 @@ public:
 	}
 	tuple<int, int, int> drop_mark() {
 		int y, x;
-		if (this->is_ai) {
-			random_device rd;
-			mt19937 gen(rd());
-			uniform_int_distribution<int> dis(0, 2);
-			y = dis(gen);
-			x = dis(gen);
-		}
-		else {
-			cout << this->player_num << "P  " << "(y, x)좌표를 입력하세요 >> ";
-			cin >> y >> x;
-		}
+
+		random_device rd;
+		mt19937 gen(rd());
+		uniform_int_distribution<int> dis(0, 2);
+		y = dis(gen);
+		x = dis(gen);
+
 
 		tuple<int, int, int> v = make_tuple(y, x, this->mark);
 		return v;
@@ -432,6 +435,7 @@ private:
 	int mode;
 	int turn;
 	int turn_count;
+	int play_count;
 	Player p1;
 	Player p2;
 	Server server;
@@ -442,7 +446,7 @@ public:
 		mode = 0;
 		turn = 1;
 		turn_count = 9;
-
+		play_count = 0;
 		cout << endl;
 
 	}
@@ -456,6 +460,33 @@ public:
 		printf("       #     #    ####       #     #   #    ####       #      ###    #####     \n");
 		printf("----------------------------------------------------------------------------------\n");
 	}
+
+	void ip_setting() {
+		title_show();
+		int x = 30;
+		int y = 12;
+		char ip[100] = "";
+		int port_num;
+		int success = 0;
+		while (1) {
+			system("cls");
+			title_show();
+			cout << " IP를 입력하세요 >> ";
+			cin >> ip;
+			cout << " port 번호를 입력하세요 >> ";
+			cin >> port_num;
+
+			client.set_ip(ip);
+			client.set_port(port_num);
+			success = client.connect_();
+			cout << endl;
+			if (success) {
+				break;
+			}
+		}
+		
+	}
+
 	int draw_player_choice() {
 		title_show();
 		int x = 30;
@@ -504,9 +535,9 @@ public:
 		gotoxy(x - 2, y - 1);
 		cout << "<<  O,X중 사용할것 선택  >>" << endl;
 		gotoxy(x - 2, y);
-		cout << "> O";
+		cout << "> O : Server";
 		gotoxy(x, y + 1);
-		cout << "X";
+		cout << "X : Client";
 		gotoxy(x, y + 2);
 		cout << endl;
 		while (1) {
@@ -709,8 +740,7 @@ public:
 			if (menu_code == 0) {
 				system("cls");
 				this->mode = draw_player_choice() + 1; // 모드 선택.
-				system("cls");
-				title_show();
+				
 				break;
 			}
 			else {
@@ -725,13 +755,23 @@ public:
 		return this->mode;
 	}
 	void set_player_inform() {
-
 		bool input_ox_check = 1;
 		system("cls");
-	
+		int temp = -10;
+		if (play_count == 0) {
+			temp = draw_player_ox();
+			if (temp == 1 and mode==2) {
+				ip_setting();
+			}
+		}
+		if (play_count !=0 and mode == 1) {
+			temp = draw_player_ox();
+		}
+		
 
-		int temp = draw_player_ox();
-
+		
+		system("cls");
+		title_show();
 		Player* p;
 		if (temp == 0) {
 			//여기서 server on
@@ -766,9 +806,6 @@ public:
 			 
 		}
 		else if (temp == 1) {
-			if (this->get_mode() == 2) {
-				client.connect_(); // 예외처리 할것.
-			}
 			
 			p = &p1;
 			p->set_mark(2);
@@ -800,17 +837,19 @@ public:
 		is_full = map.is_full();
 		if (check || !is_full) {
 			if (check) {
-				cout << "<< " << show_list[check] << "가 이겼습니다. >>" << endl;
+				
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
+				cout << "<< " << show_list[check] << "가 이겼습니다. >>" << endl;
 				return 0;
 			}
 			else {
-				cout << "<< " << "무승부 입니다. >>" << endl;
+				
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
+				cout << "<< " << "무승부 입니다. >>" << endl;
 				return 0;
 			}
 			turn_count = 0;
@@ -836,7 +875,7 @@ public:
 		bool gaming = 1;
 		bool first_turn = 1;
 		bool end_checker = 1;
-		char winning_check = '0';
+		
 		if (!this->turn_count) {
 			return;
 		}
@@ -844,6 +883,7 @@ public:
 		set_player_inform(); // server client connection 완료
 		system("cls");
 		title_show();
+		map.map_init();
 		switch (this->get_mode()) {
 		case 1: // 1인용
 		{
@@ -898,31 +938,40 @@ public:
 			if (p1.get_mark() == 1) { // p1 server mark : "O"
 				//server.send_message();	
 				int strLen = 0;
+				char a = 0;
 				char message[BUFSIZE] = "";
-				fputs("전송할 메세지를 입력하세요. (q to quit) : ", stdout);
+				char winning_check[3] = "";
+				//fputs("전송할 메세지를 입력하세요. (q to quit) : ", stdout);
 				//fgets(message, BUFSIZE, stdin);
 				while ((strLen = recv(server.get_client_sock(), message, BUFSIZE, 0)) != 0) {
-
+					memset(winning_check, 0, sizeof(winning_check));
 					// recv로 map 세팅.
 					map.set_mark(message[0] - '0', message[1] - '0', message[2] - '0');
 					memset(message, 0, sizeof(message));
 					system("cls");
-					map.show_map();
+					//map.show_map();
 
 					// end check
 					end_checker = checker_p1();
-					if (!end_checker) {
-						cout << p2.get_mark_char() << "가 이겼습니다." << endl;
+					if (!end_checker || (message[3] == '1')) {
+						//cout << p2.get_mark_char() << "가 이겼습니다." << endl;
 						char a = 0;
-						cout << "\n  아무 키나 눌러 타이틀로.." << endl;
-						a = _getch();
+						cout << "\n  다시 하려면 1, 아니면 아무 키나 눌러 타이틀로.." << endl;
+						a = _getch();	
 						if (a) {
+							play_count++;
 							return;
 						}
 					}
-					
+					memset(message, 0, sizeof(message));
+					if (a) {
+						play_count++;
+						return;
+					}
+					//memset(message, 0, sizeof(message));
 					// 돌 놓기
 					mark_xy = drop_marker_consol(p1);
+					
 					temp_y = get<0>(mark_xy);
 					temp_x = get<1>(mark_xy);
 					temp_mark = p1.get_mark();
@@ -931,14 +980,14 @@ public:
 					//end check
 					end_checker = checker_p1();
 					if (!end_checker) {
-						cout << p1.get_mark_char() << "가 이겼습니다." << endl;
-						char a = 0;
-						cout << "\n  아무 키나 눌러 타이틀로.." << endl;
-						a = _getch();
-						if (a) {
-							return;
-						}
+						strcat(winning_check, "1");
 					}
+					else {
+						strcat(winning_check, "0");
+						gotoxy(19, 9);
+						cout << " 상대방을 기다리는 중입니다" << endl;
+					}
+
 					char y_[10] = "";
 					char x_[10] = "";
 					char mark_[10] = "";
@@ -949,34 +998,48 @@ public:
 					strcat(message, y_);
 					strcat(message, x_);
 					strcat(message, mark_);
+					strcat(message, winning_check);
 
 					send(server.get_client_sock(), message, strlen(message), 0);
+					if (!end_checker || message[3]=='1') {
+						//cout << p1.get_mark_char() << "가 이겼습니다." << endl;
+						char a = 0;
+						cout << "\n  아무 키나 눌러 타이틀로.." << endl;
+						a = _getch();
+						if (a) {
+							play_count++;
+							return;
+						}
+					}
+					
 					memset(message, 0, sizeof(message));
+					if (a) {
+						play_count++;
+						return;
+					}
 				}
 			}
 			else {                    // p2 client mark : "X"
-				//client.echo_test();
 				char message[BUFSIZE] = "";
+				char winning_check[3] = "";
+				char a = 0;
 				while (1) {
-
-					mark_xy = drop_marker_consol(p1);
+					memset(winning_check, 0, sizeof(winning_check));
+					mark_xy = drop_marker_consol(p1);			
 					temp_y = get<0>(mark_xy);
 					temp_x = get<1>(mark_xy);
 					temp_mark = p1.get_mark();
-		
 					map.set_mark(temp_y, temp_x, temp_mark);
-					// end check
 					end_checker = checker_p1();
 					if (!end_checker) {
-						cout << p1.get_mark_char() << "가 이겼습니다." << endl;
-						char a = 0;
-						cout << "\n  아무 키나 눌러 타이틀로.." << endl;
-						a = _getch();
-						if (a) {
-							return;
-						}
+						strcat(winning_check, "1");
 					}
-
+					else {
+						strcat(winning_check, "0");
+						gotoxy(19, 9);
+						cout << " 상대방을 기다리는 중입니다" << endl;
+					}
+					
 					char y_[10] = "";
 					char x_[10] = "";
 					char mark_[10] = "";
@@ -987,31 +1050,48 @@ public:
 					strcat(message, y_);
 					strcat(message, x_);
 					strcat(message, mark_);
+					strcat(message, winning_check);
+					
 
 					//전송
-					printf("전송하는 메세지 : %s\n", message);
-					int strLen = send(client.get_sock(), message, strlen(message), 0);
-					//받기
-					strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0); // 동기, 받은게 message로 들어감
-					//printf("%d\n", strLen);
-					map.set_mark(message[0] - '0', message[1] - '0', message[2] - '0');
-					system("cls");
-					map.show_map();
+					int strLen = send(client.get_sock(), message, strlen(message), 0);		
 
 					// end check
-					end_checker = checker_p1();
-					if (!end_checker) {
-						cout << p2.get_mark_char() << "가 이겼습니다." << endl;
+					if (!end_checker || (message[3]=='1')) {
+						//cout << p1.get_mark_char() << "가 이겼습니다." << endl;
 						char a = 0;
 						cout << "\n  아무 키나 눌러 타이틀로.." << endl;
 						a = _getch();
 						if (a) {
+							play_count++;
+							return;
+						}
+					}
+					memset(message, 0, sizeof(message));
+					//받기
+					strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0); // 동기, 받은게 message로 들어감
+					map.set_mark(message[0] - '0', message[1] - '0', message[2] - '0');
+					system("cls");
+
+					// end check
+					end_checker = checker_p1();
+					if (!end_checker || (message[3]=='1')) {
+						//cout << p2.get_mark_char() << "가 이겼습니다." << endl;
+						char a = 0;
+						cout << "\n  아무 키나 눌러 타이틀로.." << endl;
+						a = _getch();
+						if (a) {
+							play_count++;
 							return;
 						}
 					}
 					message[strLen] = 0;
-					printf("서버로 부터 전송된 메세지 :  %s \n", message);
+					//printf("서버로 부터 전송된 메세지 :  %s \n", message);
 					memset(message, 0, sizeof(message));
+					if (a) {
+						play_count++;
+						return;
+					}
 				}			
 
 			}
@@ -1030,12 +1110,12 @@ public:
 int main() {
 	//수정 테스트 
 
-
+	system("cls");
+	Game a;
 	while (1) {
-		system("cls");
-		Game a;
+		
 		a.play();
-
+		system("cls");
 	}
 
 
