@@ -1105,7 +1105,7 @@ public:
 
 int main() {
 	//수정 테스트 
-
+	//.
 	system("cls");
 	Game a;
 	while (1) {
