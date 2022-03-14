@@ -936,13 +936,11 @@ public:
 			bool drop_success = 0;
 
 			if (p1.get_mark() == 1) { // p1 server mark : "O"
-				//server.send_message();	
 				int strLen = 0;
 				char a = 0;
 				char message[BUFSIZE] = "";
 				char winning_check[3] = "";
-				//fputs("전송할 메세지를 입력하세요. (q to quit) : ", stdout);
-				//fgets(message, BUFSIZE, stdin);
+
 				while ((strLen = recv(server.get_client_sock(), message, BUFSIZE, 0)) != 0) {
 					memset(winning_check, 0, sizeof(winning_check));
 					// recv로 map 세팅.
@@ -956,7 +954,7 @@ public:
 					if (!end_checker || (message[3] == '1')) {
 						//cout << p2.get_mark_char() << "가 이겼습니다." << endl;
 						char a = 0;
-						cout << "\n  다시 하려면 1, 아니면 아무 키나 눌러 타이틀로.." << endl;
+						cout << "\n 아니면 아무 키나 눌러 타이틀로.." << endl;
 						a = _getch();	
 						if (a) {
 							play_count++;
@@ -968,7 +966,6 @@ public:
 						play_count++;
 						return;
 					}
-					//memset(message, 0, sizeof(message));
 					// 돌 놓기
 					mark_xy = drop_marker_consol(p1);
 					
@@ -1002,7 +999,6 @@ public:
 
 					send(server.get_client_sock(), message, strlen(message), 0);
 					if (!end_checker || message[3]=='1') {
-						//cout << p1.get_mark_char() << "가 이겼습니다." << endl;
 						char a = 0;
 						cout << "\n  아무 키나 눌러 타이틀로.." << endl;
 						a = _getch();
@@ -1019,7 +1015,7 @@ public:
 					}
 				}
 			}
-			else {                    // p2 client mark : "X"
+			else {                    // client mark : "X"
 				char message[BUFSIZE] = "";
 				char winning_check[3] = "";
 				char a = 0;
