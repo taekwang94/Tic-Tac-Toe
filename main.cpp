@@ -956,7 +956,7 @@ public:
 					if (!end_checker || (message[3] == '1')) {
 						//cout << p2.get_mark_char() << "가 이겼습니다." << endl;
 						char a = 0;
-						cout << "\n  다시 하려면 1, 아니면 아무 키나 눌러 타이틀로.." << endl;
+						cout << "\n 아니면 아무 키나 눌러 타이틀로.." << endl;
 						a = _getch();	
 						if (a) {
 							play_count++;
