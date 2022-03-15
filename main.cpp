@@ -1,5 +1,6 @@
 #pragma comment(lib, "ws2_32.lib")
 #define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <winsock2.h>
 #include <stdlib.h>
@@ -347,7 +348,7 @@ public:
 			return 1;
 		}
 		else {
-			//cout << "옳바른 위치에 놓으세요" << endl;
+			//cout << "�ǹٸ� �ġ�� �������" << endl;
 			return 0;
 		}
 	}
@@ -364,24 +365,24 @@ public:
 		return temp;
 	}
 	int check_map() {
-		//가로
+		//����
 		for (int i = 0; i < 3; i++) {
 			if (((map[i][0] == map[i][1]) && (map[i][1] == map[i][2]) && (map[i][0] == map[i][2])) && (map[i][0] != 0) && (map[i][1] != 0) && (map[i][2] != 0)) {
 				return map[i][0];
 			}
 		}
-		//세로
+		//����
 		for (int i = 0; i < 3; i++) {
 			if (((map[0][i] == map[1][i]) && (map[1][i] == map[2][i]) && (map[0][i] == map[2][i])) && (map[0][i] != 0) && (map[1][i] != 0) && (map[2][i] != 0)) {
 				return map[0][i];
 			}
 		}
-		//대각선
+		//�밢��
 		if ((map[0][0] == map[1][1]) && (map[1][1] == map[2][2]) && (map[0][0] != 0) && (map[1][1] != 0) && (map[2][2] != 0)
 			|| (map[0][2] == map[1][1]) && (map[1][1] == map[2][0]) && (map[0][2] != 0) && (map[1][1] != 0) && (map[2][0] != 0)) {
 			return map[1][1];
 		}
-		//없음
+		//���
 		return 0;
 	}
 };
@@ -544,11 +545,11 @@ public:
 		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y - 1);
-		cout << "<<  1P, 2P 선택  >>" << endl;
+		cout << "<<  1P, 2P ����  >>" << endl;
 		gotoxy(x - 2, y);
-		cout << "> 1인용";
+		cout << "> 1�ο�";
 		gotoxy(x, y + 1);
-		cout << "2인용";
+		cout << "2�ο�";
 		gotoxy(x, y + 2);
 		cout << endl;
 		while (1) {
@@ -585,6 +586,13 @@ public:
 		int y = 12;
 
 		gotoxy(x - 2, y - 1);
+
+		cout << "<<  O,X�� ����Ұ� ����  >>" << endl;
+		gotoxy(x - 2, y);
+		cout << "> O : Server";
+		gotoxy(x, y + 1);
+		cout << "X : Client";
+
 		cout << "<<  O,X중 사용할것 선택  >>" << endl;
 		gotoxy(x - 2, y);
 		cout << "> O : Server";
@@ -634,7 +642,7 @@ public:
 		title_show();
 		map.show_map();
 		gotoxy(19, y);
-		cout << p << " 차례 입니다" << endl;
+		cout << p << " ��� �Դϴ�" << endl;
 		gotoxy(5, y + 9);
 
 		x = a.get_position().x;
@@ -758,10 +766,10 @@ public:
 		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y);
-		cout << "> 게임시작";
+		cout << "> ���ӽ���";
 
 		gotoxy(x, y + 1);
-		cout << " 종료 ";
+		cout << " ��� ";
 		cout << endl;
 		while (1) {
 			int n = keyConsol();
@@ -1224,15 +1232,7 @@ public:
 					client.close_();
 					WSACleanup();
 
-				}
-			}
-			else {
-				cout << "error" << endl;
-				return;
-			}
-		}
-		}
-	} 
+	}
 
 };
 
