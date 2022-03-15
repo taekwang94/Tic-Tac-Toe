@@ -1143,8 +1143,8 @@ int main() {
 	system("cls");
 	Game game;
 	while (1) {
-
-		game.play();
+		
+		a.play();
 		system("cls");
 	}
 
