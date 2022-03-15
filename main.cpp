@@ -2,7 +2,6 @@
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
-
 #include <stdio.h>
 #include <winsock2.h>
 #include <stdlib.h>
@@ -93,19 +92,6 @@ public:
 		//IP설정 : INADDR_ANY 자신의 IP주소를 획득
 		servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 		//Port설정
-		servAddr.sin_port = htons(5555);
-	}
-
-	void init_() {
-		WSAStartup(MAKEWORD(2, 2), &wsaData);
-		//���� ��
-		hServSock = socket(PF_INET, SOCK_STREAM, 0);
-		//printf("socket �� ����\n");
-		//���ε� : �����Ҽ���
-		servAddr.sin_family = AF_INET;
-		//IP��� : INADDR_ANY �ڽ��� IP�ּҸ� ȹ��
-		servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-		//Port���
 		servAddr.sin_port = htons(5555);
 	}
 
@@ -218,15 +204,6 @@ public:
 		servAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // 127.0.0.1 자신의 ip 알아서 함
 		servAddr.sin_port = htons(5555);
 	}
-
-	void init_() {
-		WSAStartup(MAKEWORD(2, 2), &wsaData);
-		hSocket = socket(PF_INET, SOCK_STREAM, 0);
-		memset(&servAddr, 0, sizeof(servAddr));
-		servAddr.sin_family = AF_INET;
-		servAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // 127.0.0.1 �ڽ��� ip �˾Ƽ� ��
-		servAddr.sin_port = htons(5555);
-	}
 	void set_ip(const char* ip) {
 		servAddr.sin_addr.s_addr = inet_addr(ip);
 	}
@@ -281,14 +258,8 @@ public:
 		/*
 		while ((strLen = recv(hSocket, message, BUFSIZE, 0)) != 0) {
 			cout << message << " " << strLen;
-
-			message[strLen] = 0; // ���⼭ ���� �߻� , strLen : -1 messsage ��ް� �ִµ�
-			printf("����� ���� ��۵� �޼��� :  %s \n", message);
-
 			message[strLen] = 0; // 여기서 예외 발생 , strLen : -1 messsage 못받고 있는듯
 			printf("서버로 부터 전송된 메세지 :  %s \n", message);
-
-
 		}
 		*/
 		strLen = recv(hSocket, message, BUFSIZE, 0);
@@ -376,7 +347,7 @@ public:
 			return 1;
 		}
 		else {
-			//cout << "�ǹٸ� �ġ�� �������" << endl;
+			//cout << "옳바른 위치에 놓으세요" << endl;
 			return 0;
 		}
 	}
@@ -393,24 +364,24 @@ public:
 		return temp;
 	}
 	int check_map() {
-		//����
+		//가로
 		for (int i = 0; i < 3; i++) {
 			if (((map[i][0] == map[i][1]) && (map[i][1] == map[i][2]) && (map[i][0] == map[i][2])) && (map[i][0] != 0) && (map[i][1] != 0) && (map[i][2] != 0)) {
 				return map[i][0];
 			}
 		}
-		//����
+		//세로
 		for (int i = 0; i < 3; i++) {
 			if (((map[0][i] == map[1][i]) && (map[1][i] == map[2][i]) && (map[0][i] == map[2][i])) && (map[0][i] != 0) && (map[1][i] != 0) && (map[2][i] != 0)) {
 				return map[0][i];
 			}
 		}
-		//�밢��
+		//대각선
 		if ((map[0][0] == map[1][1]) && (map[1][1] == map[2][2]) && (map[0][0] != 0) && (map[1][1] != 0) && (map[2][2] != 0)
 			|| (map[0][2] == map[1][1]) && (map[1][1] == map[2][0]) && (map[0][2] != 0) && (map[1][1] != 0) && (map[2][0] != 0)) {
 			return map[1][1];
 		}
-		//���
+		//없음
 		return 0;
 	}
 };
@@ -573,11 +544,11 @@ public:
 		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y - 1);
-		cout << "<<  1P, 2P ����  >>" << endl;
+		cout << "<<  1P, 2P 선택  >>" << endl;
 		gotoxy(x - 2, y);
-		cout << "> 1�ο�";
+		cout << "> 1인용";
 		gotoxy(x, y + 1);
-		cout << "2�ο�";
+		cout << "2인용";
 		gotoxy(x, y + 2);
 		cout << endl;
 		while (1) {
@@ -614,13 +585,6 @@ public:
 		int y = 12;
 
 		gotoxy(x - 2, y - 1);
-
-		cout << "<<  O,X�� ����Ұ� ����  >>" << endl;
-		gotoxy(x - 2, y);
-		cout << "> O : Server";
-		gotoxy(x, y + 1);
-		cout << "X : Client";
-
 		cout << "<<  O,X중 사용할것 선택  >>" << endl;
 		gotoxy(x - 2, y);
 		cout << "> O : Server";
@@ -670,7 +634,7 @@ public:
 		title_show();
 		map.show_map();
 		gotoxy(19, y);
-		cout << p << " ��� �Դϴ�" << endl;
+		cout << p << " 차례 입니다" << endl;
 		gotoxy(5, y + 9);
 
 		x = a.get_position().x;
@@ -781,11 +745,7 @@ public:
 				}
 				else {
 					gotoxy(19, 13);
-
-					cout << "�̹� ���� ���Դϴ�." << endl;
-
 					cout << "이미 놓여진 곳입니다." << endl;
-
 				}
 
 			}
@@ -798,10 +758,10 @@ public:
 		int x = 30;
 		int y = 12;
 		gotoxy(x - 2, y);
-		cout << "> ���ӽ���";
+		cout << "> 게임시작";
 
 		gotoxy(x, y + 1);
-		cout << " ��� ";
+		cout << " 종료 ";
 		cout << endl;
 		while (1) {
 			int n = keyConsol();
@@ -942,11 +902,7 @@ public:
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
-
-				cout << "  << " << show_list[check] << "�� �̰��ϴ�. >>" << endl;
-
 				cout << "  << " << show_list[check] << "가 이겼습니다. >>" << endl;
-
 				return 0;
 			}
 			else {
@@ -954,11 +910,7 @@ public:
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
-
-				cout << "  << " << "���º� �Դϴ�. >>" << endl;
-
 				cout << "  << " << "무승부 입니다. >>" << endl;
-
 				return 0;
 			}
 			turn_count = 0;
@@ -970,11 +922,7 @@ public:
 		int check;
 		check = map.check_map();
 		if (check) {
-
-			cout << "  << " << show_list[check] << "�� �̰��ϴ�. >>" << endl;
-
 			cout << "  << " << show_list[check] << "가 이겼습니다. >>" << endl;
-
 			gotoxy(0, 0);
 			title_show();
 			map.show_map();
@@ -1009,11 +957,7 @@ public:
 				tuple<int, int> mark_xy;
 				bool drop_success = 0;
 				char a = ' ';
-
-				//P1 , p1 �� ����
-
 				//P1 , p1 이 서버
-
 				mark_xy = drop_marker_consol(p1);
 				int temp_y = get<0>(mark_xy);
 				int temp_x = get<1>(mark_xy);
@@ -1024,11 +968,7 @@ public:
 
 				end_checker = checker_p1();
 				if (!end_checker) {
-
-					cout << "\n  �ƹ� Ű�� ���� Ÿ��Ʋ��.." << endl;
-
 					cout << "\n  아무 키나 눌러 타이틀로.." << endl;
-
 					a = _getch();
 					if (a) {
 						return;
@@ -1043,11 +983,7 @@ public:
 
 				end_checker = checker_p2();
 				if (!end_checker) {
-
-					cout << "\n  �ƹ� Ű�� ���� Ÿ��Ʋ��.." << endl;
-
 					cout << "\n  아무 키나 눌러 타이틀로.." << endl;
-
 					a = _getch();
 					if (a) {
 						return;
@@ -1064,11 +1000,7 @@ public:
 				return;
 			}
 		}
-
-		case 2: // 2�ο�
-
 		case 2: // 2인용
-
 		{
 			if (server_setting) {
 				tuple<int, int, int> p;
@@ -1088,18 +1020,10 @@ public:
 					cout << " 상대방을 기다리는 중입니다" << endl;
 					while ((strLen = recv(server.get_client_sock(), message, BUFSIZE, 0)) != 0) {
 						if (strLen == -1) {
-
 							system("cls");
 							title_show();
 							gotoxy(19, 9);
-							cout << " ���� ����� ������ϴ�. ��븦 ��ٸ���� q, Ÿ��Ʋ�� ����� �ƹ�Ű�� ��������" << endl;
-
-
-							system("cls");
-							title_show();
-							gotoxy(19, 9);
-							cout << " 상대방 접속이 끊어졌습니다. 상대를 기다리려면 q, 타이틀로 가려면 x" << endl;
-
+							cout << " 상대방 접속이 끊어졌습니다. 상대를 기다리려면 q, 타이틀로 가려면 아무키나 누르세요" << endl;
 							server.close_();
 							client.close_();
 							WSACleanup();
@@ -1114,13 +1038,7 @@ public:
 									server.accept_();
 								}
 								system("cls");
-
 								map.map_init();
-								title_show();
-								map.show_map();
-								gotoxy(19, 9);
-								cout << " ����� ��ٸ��� ���Դϴ�" << endl;
-
 								title_show();
 								map.show_map();
 								gotoxy(19, 9);
@@ -1132,11 +1050,6 @@ public:
 								play_count++;
 								return;
 							}
-
-							//if (a) {
-							//	play_count++;
-							//	return;
-							//}
 
 						}
 						memset(winning_check, 0, sizeof(winning_check));
@@ -1159,14 +1072,6 @@ public:
 							}
 						}
 						memset(message, 0, sizeof(message));
-
-						/*
-						if (a) {
-							play_count++;
-							return;
-						}*/
-						// 돌 놓기
-
 						mark_xy = drop_marker_consol(p1);
 
 						temp_y = get<0>(mark_xy);
@@ -1209,13 +1114,6 @@ public:
 						}
 
 						memset(message, 0, sizeof(message));
-
-						/*
-						if (a) {
-							play_count++;
-							return;
-						}
-						*/
 
 					}
 				}
@@ -1268,15 +1166,6 @@ public:
 							}
 						}
 						memset(message, 0, sizeof(message));
-
-						//�ޱ�
-						strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0); // ����, ����� message�� ��
-						if (strLen == -1) { // ��� ���.
-							system("cls");
-							title_show();
-							gotoxy(19, 9);
-							cout << " ������� ������ ������ϴ�. �ƹ�Ű�� ���� Ÿ��Ʋ��.." << endl;
-
 						//받기
 						strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0); // 동기, 받은게 message로 들어감
 						if (strLen == -1) { // 접속 끊김.
@@ -1284,7 +1173,6 @@ public:
 							title_show();
 							gotoxy(19, 9);
 							cout << " 서버와의 연결이 끊어졌습니다. 아무키나 눌러 타이틀로.." << endl;
-
 							client.close_();
 							server.close_();
 							WSACleanup();
@@ -1323,7 +1211,6 @@ public:
 					client.close_();
 					WSACleanup();
 
-
 				}
 			}
 			else {
@@ -1332,11 +1219,9 @@ public:
 			}
 		}
 		}
-
 	}
 
 };
-
 
 
 
@@ -1346,14 +1231,6 @@ int main() {
 	system("cls");
 	Game game;
 	while (1) {
-
-int main() {
-	//수정 테스트 
-	//.
-	system("cls");
-	Game game;
-	while (1) { 
-
 
 		game.play();
 		system("cls");
