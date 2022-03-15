@@ -255,11 +255,9 @@ public:
 		int strLen = 0;
 		/*
 		while ((strLen = recv(hSocket, message, BUFSIZE, 0)) != 0) {
-
 			cout << message << " " << strLen;
 			message[strLen] = 0; // 여기서 예외 발생 , strLen : -1 messsage 못받고 있는듯
 			printf("서버로 부터 전송된 메세지 :  %s \n", message);
-
 		}
 		*/
 		strLen = recv(hSocket, message, BUFSIZE, 0);
@@ -1023,7 +1021,7 @@ public:
 							system("cls");
 							title_show();
 							gotoxy(19, 9);
-							cout << " 상대방 접속이 끊어졌습니다. 상대를 기다리려면 q, 타이틀로 가려면 x" << endl;
+							cout << " 상대방 접속이 끊어졌습니다. 상대를 기다리려면 q, 타이틀로 가려면 아무키나 누르세요" << endl;
 							server.close_();
 							client.close_();
 							WSACleanup();
@@ -1043,7 +1041,7 @@ public:
 								map.show_map();
 								gotoxy(19, 9);
 								cout << " 상대방을 기다리는 중입니다" << endl;
-								
+
 								continue;
 							}
 							else if (a != 'q' and a) {
