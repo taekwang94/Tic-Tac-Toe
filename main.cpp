@@ -1244,7 +1244,7 @@ int main() {
 	//.
 	system("cls");
 	Game game;
-	while (1) {
+	while (1) { 
 
 		game.play();
 		system("cls");
