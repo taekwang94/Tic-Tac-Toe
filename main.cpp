@@ -1450,7 +1450,7 @@ public:
 									}
 								}
 							}
-							else {
+							else { 
 								send(client.get_sock(), "상대방이 나갔습니다.", strlen("상대방이 나갔습니다."), 0);
 								continue_2p_game = 0;
 								cout << "아무키나 눌러 타이틀로.." << endl;
