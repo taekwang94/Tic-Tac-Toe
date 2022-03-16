@@ -1392,7 +1392,7 @@ public:
 
 
 
-int main() { 
+int main() {  
 
 	system("cls");
 	Game game;
