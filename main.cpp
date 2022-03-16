@@ -1,5 +1,4 @@
 #pragma comment(lib, "ws2_32.lib")
-
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
@@ -14,11 +13,10 @@
 #include <conio.h>
 #include <time.h>
 #include <queue>
+#include <stack>
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #define BUFSIZE 1024
-using namespace std;
 
 #define UP 0
 #define DOWN 1
@@ -30,6 +28,8 @@ using namespace std;
 #define RED "\x1b[31m"
 #define GREEN "\x1b[32m"
 #define RESET "\x1b[0m"
+
+using namespace std;
 
 int dy[] = { -1,0,1,0 };
 int dx[] = { 0,1,0,-1 };
@@ -264,15 +264,7 @@ public:
 	void recv_position() {
 		char message[BUFSIZE] = "";
 		int strLen = 0;
-		/*
-		while ((strLen = recv(hSocket, message, BUFSIZE, 0)) != 0) {
-			cout << message << " " << strLen;
-			message[strLen] = 0; // 여기서 예외 발생 , strLen : -1 messsage 못받고 있는듯
-			printf("서버로 부터 전송된 메세지 :  %s \n", message);
-		}
-		*/
 		strLen = recv(hSocket, message, BUFSIZE, 0);
-		cout << "!@#@!#@!#@!#@!#@!#!" << message << " " << strLen;
 		message[strLen] = 0; // 여기서 예외 발생 , strLen : -1 messsage 못받고 있는듯
 		printf("서버로 부터 전송된 메세지 :  %s \n", message);
 	}
@@ -294,7 +286,6 @@ public:
 		cout << a;
 		memset(message, 0, sizeof(message));
 	}
-
 	void close_() {
 		closesocket(hSocket);
 		WSACleanup();
@@ -320,6 +311,15 @@ public:
 			}
 		}
 	}
+
+	void map_init() {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				map[i][j] = 0;
+			}
+		}
+	}
+
 	void visited_init() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -349,36 +349,54 @@ public:
 		else if (y == 2)return 13;
 	}
 
-	/* // 오류 있음
-	Position find_closest_point(int y, int x) {
+	Position find_closest_point_sequential(int y, int x) {
 		Position temp;
-		if (map[y][x] == 0) {
-			temp.x = x;
-			temp.y = y;
-			return temp;
-		}
-		int y_ = y;
-		int x_ = x;
-		for (int i = 0; i < 4; i++) {
-			y_ = y_ + dy[i];
-			x_ = x_ + dx[i];
-			if (y_ >= 0 && y_ < 3 && x_ >= 0 && x_ < 3) {
-				if (visited[y_][x_] == 0) {
-					visited[y_][x_] = 1;
-					find_closest_point(y_, x_);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (!map[i][j]) {
+					temp.y = i;
+					temp.x = j;
+					return temp;
 				}
 			}
 		}
-
+		temp.x = x;
+		temp.y = y;
+		return temp;
 	}
-	*/
+	
+	//수정할것
+	Position find_closest_point(int y, int x) {
+		Position temp;
+		int y_;
+		int x_;
+		stack<pair<int, int>> st;
+		st.push(make_pair(y, x));
+		visited[y][x] = 1;
 
-	void map_init() {
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				map[i][j] = 0;
+		while (!st.empty()) {
+			y_ = st.top().first;
+			x_ = st.top().second;
+			st.pop();
+			for (int i = 0; i < 4; i++) {
+				y_ = y_ + dy[i];
+				x_ = x_ + dx[i];
+				if (y_ >= 0 && y_ < 3 && x_ >= 0 && x_ < 3) {
+					if (map[y_][x_] != 0 ) {
+						visited[y_][x_] = 1;
+						st.push(make_pair(y_, x_));
+					}
+					else {
+						temp.x = x_;
+						temp.y = y_;
+						return temp;
+					}
+				}
 			}
 		}
+		
+		
+
 	}
 
 	void show_map() {
@@ -401,17 +419,17 @@ public:
 			printf(" | ");
 			if (show_list[map[i][2]] == 'O') {
 				if (i == 2) {
-					printf("%s%c%s                                ←→↑↓ 및 스페이스바 사용\n", GREEN, show_list[map[i][2]], RESET);
+					printf("%s%c%s\n", GREEN, show_list[map[i][2]], RESET);
 				}
 				else {
 					printf("%s%c%s\n", GREEN, show_list[map[i][2]], RESET);
-					printf("%s%c%s\n", GREEN, show_list[map[i][2]], RESET);
+					//printf("%s%c%s\n", GREEN, show_list[map[i][2]], RESET);
 				}
 				
 			}
 			else {
 				if (i == 2) {
-					printf("%s%c%s                                ←→↑↓ 및 스페이스바 사용\n", RED, show_list[map[i][2]], RESET);
+					printf("%s%c%s\n", RED, show_list[map[i][2]], RESET);
 				}
 				else {
 					printf("%s%c%s\n", RED, show_list[map[i][2]], RESET);
@@ -610,13 +628,14 @@ public:
 		return this->continue_2p_game;
 	}
 	void title_show() {
-		printf("\n\n");
-		printf("     #####   #    ####     #####     #      ####     #####    ###    #####     \n");
-		printf("       #     #   #           #      # #    #           #     #   #   #         \n");
+		printf("\n");
+		printf("     #####   #    ####     #####    ###     ####     #####    ###    #####     \n");
+		printf("       #     #   #           #     #   #   #           #     #   #   #         \n");
 		printf("       #     #   #           #     #####   #           #     #   #   #####     \n");
 		printf("       #     #   #           #     #   #   #           #     #   #   #         \n");
 		printf("       #     #    ####       #     #   #    ####       #      ###    #####     \n");
 		printf("----------------------------------------------------------------------------------\n");
+		printf("                                                     ←→↑↓ 및 스페이스바 사용  \n");
 
 	}
 
@@ -741,8 +760,8 @@ public:
 		map.show_map();
 		gotoxy(19, y);
 		//cout << "내 차례 입니다" << endl;
-		printf("%s내 차례 입니다%s\n", YELLOW, RESET);
-		gotoxy(5, y + 9);
+		printf("%s내 차례 입니다%s", YELLOW, RESET);
+		//gotoxy(5, y + 9);
 		
 		Position curr;
 
@@ -750,16 +769,14 @@ public:
 		x = a.get_position().x;
 		y = a.get_position().y;
 		
-		/*
 		x_arr = map.get_map_to_arr_x(x);
 		y_arr = map.get_map_to_arr_y(y);
-		curr = map.find_closest_point(y_arr, x_arr);
-		cout << "!@#!@#!@!#!@#@!#!@#@!" << y_arr << "    " << x_arr << endl;
-		cout << "!@#!@#!@!#!@#@!#!@#@!" << y << "    " << x << endl;
+		//curr = map.find_closest_point(y_arr, x_arr);
+		curr = map.find_closest_point_sequential(y_arr, x_arr);
 		x = map.get_arr_to_map_x(curr.x);
 		y = map.get_arr_to_map_y(curr.y);
 		//find closest point
-		*/
+
 
 		gotoxy(x - 2, y);
 		cout << ">";
@@ -770,7 +787,7 @@ public:
 			//cout << "(" << x << " " << y << ")" << endl;
 			//cout << "(" << x_ << " " << y_ << ")";
 			int n = keyConsol();
-			switch (n) {
+ 			switch (n) {
 			case UP: { // 
 				if (y > 9) {
 					gotoxy(x - 2, y);
@@ -883,6 +900,8 @@ public:
 		gotoxy(x, y + 1);
 		cout << " 종료 ";
 		cout << endl;
+		
+		
 		while (1) {
 			int n = keyConsol();
 			switch (n) {
