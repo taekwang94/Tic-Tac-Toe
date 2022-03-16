@@ -13,6 +13,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <time.h>
+#include <queue>
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
@@ -30,7 +31,8 @@ using namespace std;
 #define GREEN "\x1b[32m"
 #define RESET "\x1b[0m"
 
-
+int dy[] = { -1,0,1,0 };
+int dx[] = { 0,1,0,-1 };
 char show_list[] = { ' ', 'O', 'X' };
 
 void gotoxy(int x, int y) {
@@ -59,6 +61,12 @@ int keyConsol() {
 		return SUBMIT;
 	}
 }
+
+struct Position {
+	int x;
+	int y;
+};
+
 class Server {
 private:
 	WSADATA wsaData;
@@ -297,6 +305,7 @@ public:
 class Map {
 private:
 	int map[3][3];
+	bool visited[3][3];
 
 public:
 	Map() {
@@ -305,7 +314,64 @@ public:
 				map[i][j] = 0;
 			}
 		}
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				visited[i][j] = 0;
+			}
+		}
 	}
+	void visited_init() {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				visited[i][j] = 0;
+			}
+		}
+	}
+
+	int get_map_to_arr_x(int x) {
+		if (x == 9) return 0;
+		else if (x == 13) return 1;
+		else if (x == 17) return 2;
+	}
+	int get_map_to_arr_y(int y) {
+		if (y == 9) return 0;
+		else if (y == 11) return 1;
+		else if (y == 13) return 2;
+	}
+	int get_arr_to_map_x(int x) {
+		if (x == 0) return 9;
+		else if (x == 1)return 13;
+		else if (x == 2)return 17;
+	}
+	int get_arr_to_map_y(int y) {
+		if (y == 0) return 9;
+		else if (y == 1) return 11;
+		else if (y == 2)return 13;
+	}
+
+	/* // 오류 있음
+	Position find_closest_point(int y, int x) {
+		Position temp;
+		if (map[y][x] == 0) {
+			temp.x = x;
+			temp.y = y;
+			return temp;
+		}
+		int y_ = y;
+		int x_ = x;
+		for (int i = 0; i < 4; i++) {
+			y_ = y_ + dy[i];
+			x_ = x_ + dx[i];
+			if (y_ >= 0 && y_ < 3 && x_ >= 0 && x_ < 3) {
+				if (visited[y_][x_] == 0) {
+					visited[y_][x_] = 1;
+					find_closest_point(y_, x_);
+				}
+			}
+		}
+
+	}
+	*/
 
 	void map_init() {
 		for (int i = 0; i < 3; i++) {
@@ -335,9 +401,10 @@ public:
 			printf(" | ");
 			if (show_list[map[i][2]] == 'O') {
 				if (i == 2) {
-					printf("%s%c%s                                ←→↑↓ 및 스페이스바 사용\n", RED, show_list[map[i][2]], RESET);
+					printf("%s%c%s                                ←→↑↓ 및 스페이스바 사용\n", GREEN, show_list[map[i][2]], RESET);
 				}
 				else {
+					printf("%s%c%s\n", GREEN, show_list[map[i][2]], RESET);
 					printf("%s%c%s\n", GREEN, show_list[map[i][2]], RESET);
 				}
 				
@@ -400,10 +467,7 @@ public:
 	}
 };
 
-struct Position {
-	int x;
-	int y;
-};
+
 
 class Player {
 private:
@@ -680,8 +744,22 @@ public:
 		printf("%s내 차례 입니다%s\n", YELLOW, RESET);
 		gotoxy(5, y + 9);
 		
+		Position curr;
+
+		int x_arr, y_arr;
 		x = a.get_position().x;
 		y = a.get_position().y;
+		
+		/*
+		x_arr = map.get_map_to_arr_x(x);
+		y_arr = map.get_map_to_arr_y(y);
+		curr = map.find_closest_point(y_arr, x_arr);
+		cout << "!@#!@#!@!#!@#@!#!@#@!" << y_arr << "    " << x_arr << endl;
+		cout << "!@#!@#!@!#!@#@!#!@#@!" << y << "    " << x << endl;
+		x = map.get_arr_to_map_x(curr.x);
+		y = map.get_arr_to_map_y(curr.y);
+		//find closest point
+		*/
 
 		gotoxy(x - 2, y);
 		cout << ">";
@@ -1392,7 +1470,7 @@ public:
 
 
 
-int main() { 
+int main() {  
 
 	system("cls");
 	Game game;
