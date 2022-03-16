@@ -580,11 +580,11 @@ public:
 
 class Game {
 private:
-	int mode;
-	int turn;
-	int turn_count;
-	int play_count;
-	bool continue_2p_game;
+	int mode; // 1인, 2인 모드
+	int turn; 
+	int turn_count; // 9개 공간 차는것 체크
+	int play_count; // 몇번 게임 진행했는지 확인. server client 연결 끊겼을 시 0으로 초기화
+	bool continue_2p_game; // server client 게임 계속 진행 여부
 	Player p1;
 	Player p2;
 	Server server;
@@ -639,7 +639,7 @@ public:
 
 	}
 
-	void ip_setting() {
+	void ip_setting() { // server client 연결하기 위한 client ip 세팅
 		title_show();
 		int x = 30;
 		int y = 12;
@@ -664,7 +664,7 @@ public:
 
 	}
 
-	int draw_player_choice() {
+	int draw_player_choice() { // 1p, 2p 정하는 함수
 		title_show();
 		int x = 30;
 		int y = 12;
@@ -704,7 +704,7 @@ public:
 		}
 	}
 
-	int draw_player_ox() {
+	int draw_player_ox() { // o, x 선택창
 		title_show();
 		int x = 30;
 		int y = 12;
@@ -745,15 +745,15 @@ public:
 		}
 	}
 
-	tuple<int, int> drop_marker_consol(Player& a) {
+	tuple<int, int> drop_marker_consol(Player& player) { //선택된 위치에 돌 놓기
 		int x = 9;
 		int y = 9;
 		int left_count = 0;
 		int right_count = 0;
 		int up_count = 0;
 		int down_count = 0;
-		char p = a.get_mark_char();
-		int player_num = a.get_player_num();
+		char p = player.get_mark_char();
+		int player_num = player.get_player_num();
 
 		system("cls");
 		title_show();
@@ -766,8 +766,8 @@ public:
 		Position curr;
 
 		int x_arr, y_arr;
-		x = a.get_position().x;
-		y = a.get_position().y;
+		x = player.get_position().x;
+		y = player.get_position().y;
 		
 		x_arr = map.get_map_to_arr_x(x);
 		y_arr = map.get_map_to_arr_y(y);
@@ -775,17 +775,12 @@ public:
 		curr = map.find_closest_point_sequential(y_arr, x_arr);
 		x = map.get_arr_to_map_x(curr.x);
 		y = map.get_arr_to_map_y(curr.y);
-		//find closest point
-
 
 		gotoxy(x - 2, y);
 		cout << ">";
 		int x_ = x;
 		int y_ = y;
 		while (1) {
-			//gotoxy(26, 26);
-			//cout << "(" << x << " " << y << ")" << endl;
-			//cout << "(" << x_ << " " << y_ << ")";
 			int n = keyConsol();
  			switch (n) {
 			case UP: { // 
@@ -802,10 +797,8 @@ public:
 					else {
 						printf("%c", p);
 					}
-
 					up_count--;
 					y_ -= 2;
-
 				}
 				break;
 			}
@@ -867,18 +860,12 @@ public:
 				break;
 			}
 			case SUBMIT: {
-				int y_mapping[18] = { 0, };
-				int x_mapping[18] = { 0, };
-				y_mapping[9] = 0;
-				y_mapping[11] = 1;
-				y_mapping[13] = 2;
-				x_mapping[9] = 0;
-				x_mapping[13] = 1;
-				x_mapping[17] = 2;
-
-				if (map.get_position_mark(y_mapping[y], x_mapping[x]) == 0) {
-					tuple<int, int> v = make_tuple(y_mapping[y], x_mapping[x]);
-					a.set_position(x_, y_);
+				int y_temp, x_temp;
+				y_temp = map.get_map_to_arr_y(y);
+				x_temp = map.get_map_to_arr_x(x);
+				if (map.get_position_mark(y_temp, x_temp) == 0) {
+					tuple<int, int> v = make_tuple(y_temp, x_temp);
+					player.set_position(x_, y_);
 					return v;
 				}
 				else {
@@ -890,7 +877,7 @@ public:
 		}
 	}
 
-	int draw_menu() {
+	int draw_menu() { // 메인메뉴
 		title_show();
 		int x = 30;
 		int y = 12;
@@ -929,12 +916,12 @@ public:
 			}
 		}
 	}
-	void set_mode() {
+	void set_mode() { // 모드 선택
 		int menu_code = draw_menu();
 		while (1) {
 			if (menu_code == 0) {
 				system("cls");
-				this->mode = draw_player_choice() + 1; // 모드 선택.
+				this->mode = draw_player_choice() + 1; 
 				break;
 			}
 			else {
@@ -950,7 +937,7 @@ public:
 		bool input_ox_check = 1;
 		system("cls");
 		int ox_01 = -10;
-		if (play_count == 0) {
+		if (play_count == 0) { // 처음 게임 시에만 ip 세팅용
 			ox_01 = draw_player_ox();
 			if (ox_01 == 1 and mode == 2) { // X 선택한 경우 ip 입력
 				ip_setting();
@@ -963,13 +950,13 @@ public:
 		system("cls");
 		title_show();
 		Player* p;
-		if (ox_01 == 0) {
+		if (ox_01 == 0) { // 'O'선택 시 server 역할.
 			//여기서 server on
 			if (this->get_mode() == 2) {
 				int a, b;
 				a = server.bind_();
 				b = server.listen_();
-				if (a == 1 && b == 1) {
+				if (a == 1 && b == 1) { // bind, reset 성공 시 accept 대기
 					server.accept_();
 				}
 				else {
@@ -1025,14 +1012,13 @@ public:
 
 	}
 
-	bool checker_p1() {
+	bool checker_p1() { // 종료 체크
 		int is_full = 0;
 		int check;
 		check = map.check_map();
 		is_full = map.is_full();
 		if (check || !is_full) {
 			if (check) {
-
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
@@ -1040,7 +1026,6 @@ public:
 				return 0;
 			}
 			else {
-
 				gotoxy(0, 0);
 				title_show();
 				map.show_map();
@@ -1052,7 +1037,7 @@ public:
 		}
 	}
 
-	bool checker_p2() {
+	bool checker_p2() { // 후공 종료 체크 ,, 없애고 checker_p1과 합치도록 수정할것
 		int check;
 		check = map.check_map();
 		if (check) {
@@ -1066,7 +1051,7 @@ public:
 		return 1;
 	}
 
-	void play() {
+	void play() { // 게임 진행 함수
 		bool gaming = 1;
 		bool end_checker = 1;
 		bool server_setting = 0;
@@ -1209,7 +1194,6 @@ public:
 						// end check
 						end_checker = checker_p1();
 						if (!end_checker || (message[3] == '1')) {
-							//cout << p2.get_mark_char() << "가 이겼습니다." << endl;
 							char a = 0;
 							cout << "\n 재대결을 원하면 q, 아니면 아무 키나 눌러 타이틀로.." << endl;
 							a = _getch();
@@ -1217,7 +1201,9 @@ public:
 								memset(message, 0, sizeof(message));
 								strcat(message, "q");
 								send(server.get_client_sock(), message, strlen(message), 0);
-								while ((strLen = recv(server.get_client_sock(), message, BUFSIZE, 0)) != 0) {						
+								cout << "상대방 응답을 기다리는 중입니다" << endl;
+								while ((strLen = recv(server.get_client_sock(), message, BUFSIZE, 0)) != 0) {	
+									
 									if (!strcmp(message, "q")) { // 재대결
 										continue_2p_game = 1;
 										return;
@@ -1287,7 +1273,9 @@ public:
 								memset(message, 0, sizeof(message));
 								strcat(message, "q");
 								send(server.get_client_sock(), message, strlen(message), 0);
+								cout << "상대방 응답을 기다리는 중입니다" << endl;
 								while ((strLen = recv(server.get_client_sock(), message, BUFSIZE, 0)) != 0) {
+									
 									if (!strcmp(message, "q")) { // 재대결
 										continue_2p_game = 1;
 										return;
@@ -1360,7 +1348,6 @@ public:
 
 						// end check
 						if (!end_checker || (message[3] == '1')) {
-							//cout << p1.get_mark_char() << "가 이겼습니다." << endl;
 							char a = 0;
 							cout << "\n 재대결을 원하면 q, 아니면 아무 키나 눌러 타이틀로.." << endl;
 							a = _getch();
@@ -1368,7 +1355,9 @@ public:
 								memset(message, 0, sizeof(message));
 								strcat(message, "q");
 								send(client.get_sock(), message, strlen(message), 0);
+								cout << "상대방 응답을 기다리는 중입니다" << endl;
 								while ((strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0)) != 0) {
+									
 									if (!strcmp(message, "q")) { // 재대결
 										continue_2p_game = 1;
 										return;
@@ -1431,7 +1420,9 @@ public:
 								memset(message, 0, sizeof(message));
 								strcat(message, "q");
 								send(client.get_sock(), message, strlen(message), 0);
+								cout << "상대방 응답을 기다리는 중입니다" << endl;
 								while ((strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0)) != 0) {
+									
 									if (!strcmp(message, "q")) { // 재대결
 										continue_2p_game = 1;
 										return;
