@@ -1037,7 +1037,7 @@ public:
 		}
 	}
 
-	bool checker_p2() { // 후공 종료 체크 ,, 없애고 checker_p1과 합치도록 수정할것
+	bool checker_p2() { // 후공 종료 체크 
 		int check;
 		check = map.check_map();
 		if (check) {
@@ -1356,8 +1356,7 @@ public:
 								strcat(message, "q");
 								send(client.get_sock(), message, strlen(message), 0);
 								cout << "상대방 응답을 기다리는 중입니다" << endl;
-								while ((strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0)) != 0) {
-									
+								while ((strLen = recv(client.get_sock(), message, BUFSIZE - 1, 0)) != 0) {							
 									if (!strcmp(message, "q")) { // 재대결
 										continue_2p_game = 1;
 										return;
@@ -1367,8 +1366,7 @@ public:
 										cout << "상대방이 나갔습니다." << endl;
 										play_count = 0;
 										cout << "아무키나 눌러 타이틀로.." << endl;
-										a = _getch();
-										
+										a = _getch();	
 										if (a) {
 											return;
 										}
@@ -1381,7 +1379,6 @@ public:
 								play_count = 0;
 								cout << "아무키나 눌러 타이틀로.." << endl;
 								a = _getch();
-								
 								if (a) {
 									return;
 								}
@@ -1432,8 +1429,7 @@ public:
 										cout << "상대방이 나갔습니다." << endl;
 										play_count = 0;
 										cout << "아무키나 눌러 타이틀로.." << endl;
-										a = _getch();
-										
+										a = _getch();	
 										if (a) {
 											return;
 										}
@@ -1445,8 +1441,7 @@ public:
 								send(client.get_sock(), "상대방이 나갔습니다.", strlen("상대방이 나갔습니다."), 0);
 								continue_2p_game = 0;
 								cout << "아무키나 눌러 타이틀로.." << endl;
-								a = _getch();
-								
+								a = _getch();					
 								if (a) {
 									return;
 								}
@@ -1480,8 +1475,7 @@ public:
 
 
 
-int main() {  
-
+int main() {
 	system("cls");
 	Game game;
 	bool is_continue = 0;
@@ -1492,7 +1486,5 @@ int main() {
 		game.player_position_init();
 		is_continue = game.get_continue_2p_game();
 	}
-
-
 	return 0;
 }
